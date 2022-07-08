@@ -13,7 +13,9 @@ router.post('/truelayer-callback', async (req, res) => {
   const uid = req.user.uid;
 
   try {
+    functions.logger.log('exchanging code for token', code, redirectUri);
     const tokens = await exchangeCodeForToken(code, decodeURI(redirectUri));
+    functions.logger.log('done');
     const trueLayerAccounts = await getAccounts(tokens.access_token);
     const newConnection = {
       uid,
