@@ -32,7 +32,6 @@ module.exports = async function(req, res, next) {
         accounts: connection.accounts
       });
     } else {
-      functions.logger.log('Refreshing token');
 
       try {
         const now = new Date();

@@ -83,7 +83,6 @@ router.get('/', async (req, res) => {
 
   try {
     const db = getFirestore();
-    functions.logger.log('querying dbTransactions');
     const dbTransactions = await db.collection('Transactions')
       .where('uid', '==', uid)
       .where('account', '==', accountId)
