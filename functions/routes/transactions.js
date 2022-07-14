@@ -95,7 +95,7 @@ router.get('/', async (req, res) => {
        * Includes all transactions up to the end of the date range
        * Recurring transactions will be from the last paid date, up to the end of the date range
        */
-      const items = dbTransactions.docs.map((doc) => doc.data());
+      const items = dbTransactions.docs.map((doc) => ({ ...doc.data(), _id: doc.id }));
 
       // first get all standard pending transactions
       const includedPendingTransactions = items
