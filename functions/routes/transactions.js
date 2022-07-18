@@ -10,12 +10,6 @@ const { getPendingTransactionsFromRecurring } = require('./util/transactions');
 
 const { getFirestore } = require('firebase-admin/firestore');
 
-const isInvalidTransaction = (trasnsaction) => {
-  const { account, type, amount, date, title, savingAccount } = trasnsaction;
-  return !account || !type || !amount || !date || !title
-    || (type === 'saving' && !savingAccount);
-};
-
 const sortByDateFn = (a, b) => {
   return isDateBefore(new Date(a.date), new Date(b.date))
     ? 1
