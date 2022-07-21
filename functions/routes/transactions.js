@@ -6,7 +6,7 @@ const isDateAfter = require('date-fns/isAfter');
 const isSameDay = require('date-fns/isSameDay');
 
 const { getTransactions } = require('../truelayer/api');
-const { getPendingTransactionsFromRecurring } = require('./util/transactions');
+const { getPendingTransactionsFromRecurring } = require('../util/transactions');
 
 const { getFirestore } = require('firebase-admin/firestore');
 

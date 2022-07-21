@@ -1,6 +1,8 @@
 const startOfDay = require('date-fns/startOfDay');
 const lastDayOfMonth = require('date-fns/lastDayOfMonth');
 const startOfMonth = require('date-fns/startOfMonth');
+const endOfYesterday = require('date-fns/endOfYesterday');
+const endOfMonth = require('date-fns/endOfMonth');
 const previousFriday = require('date-fns/previousFriday');
 const nextMonday = require('date-fns/nextMonday');
 const addDays = require('date-fns/addDays');
@@ -27,6 +29,10 @@ const forEachDayBetween = (from, to, cb) => {
   for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
     cb(d);
   }
+}
+
+const isNthDay = (day, n) => {
+  return String(day.getDate()) === n;
 }
 
 const isLastWeekday = (day) => {
@@ -63,8 +69,9 @@ const previousWeekDay = (day) => {
 
 const nextWeekDay = (day) => {
   const weekDay = new Date(day);
+  weekDay.setDate(weekDay.getDate() + 1);
   while (isWeekend(weekDay)) {
-    weekDay.setDate(weekDay.getDate() + 1)
+    weekDay.setDate(weekDay.getDate() + 1);
   }
   return weekDay;
 }
@@ -77,16 +84,18 @@ const lastWeekDay = (day) => {
 
 const previousWorkingDay = (day) => {
   const workingDay = new Date(day);
+  workingDay.setDate(workingDay.getDate() - 1);
   while (isWeekend(workingDay) || isBankHoliday(workingDay)) {
-    workingDay.setDate(workingDay.getDate() - 1)
+    workingDay.setDate(workingDay.getDate() - 1);
   }
   return workingDay;
 }
 
 const nextWorkingDay = (day) => {
   const workingDay = new Date(day);
+  workingDay.setDate(workingDay.getDate() + 1);
   while (isWeekend(workingDay) || isBankHoliday(workingDay)) {
-    workingDay.setDate(workingDay.getDate() + 1)
+    workingDay.setDate(workingDay.getDate() + 1);
   }
   return workingDay;
 }
@@ -120,6 +129,7 @@ const isLastNamedDay = (day, dayName) => {
 
 const nextNamedDay = (day, dayName) => {
   const namedDay = new Date(day);
+  namedDay.setDate(namedDay.getDate() + 1);
   while (!isNamedDay(namedDay, dayName)) {
     namedDay.setDate(namedDay.getDate() + 1);
   }
@@ -128,6 +138,7 @@ const nextNamedDay = (day, dayName) => {
 
 const previousNamedDay = (day, dayName) => {
   const namedDay = new Date(day);
+  namedDay.setDate(namedDay.getDate() - 1);
   while (!isNamedDay(namedDay, dayName)) {
     namedDay.setDate(namedDay.getDate() - 1);
   }
@@ -142,10 +153,20 @@ const lastNamedDay = (day, dayName) => {
 
 const previousLastNamedDay = (day, dayName) => {
   let previousLastNamedDay = previousNamedDay(day, dayName);
+  previousLastNamedDay.setDate(previousLastNamedDay.getDate() - 1);
   while (!isLastNamedDay(previousLastNamedDay, dayName)) {
-    previousLastNamedDay.setDate(previousLastNamedDay.getDate() - 1)
+    previousLastNamedDay.setDate(previousLastNamedDay.getDate() - 1);
   }
   return previousLastNamedDay;
+}
+
+const nextLastNamedDay = (day, dayName) => {
+  let nextLastNamedDay = nextNamedDay(day, dayName);
+  nextLastNamedDay.setDate(nextLastNamedDay.getDate() + 1);
+  while (!isLastNamedDay(nextLastNamedDay, dayName)) {
+    nextLastNamedDay.setDate(nextLastNamedDay.getDate() + 1);
+  }
+  return nextLastNamedDay;
 }
 
 const isNthNamedDay = (day, n, dayName) => {
@@ -155,18 +176,123 @@ const isNthNamedDay = (day, n, dayName) => {
 
 const previousNthDay = (day, n) => {
   const nthDay = new Date(day);
+  nthDay.setDate(nthDay.getDate() - 1);
   while (String(nthDay.getDate()) !== n) {
-    nthDay.setDate(nthDay.getDate() - 1)
+    nthDay.setDate(nthDay.getDate() - 1);
   }
   return nthDay;
 }
 
 const nextNthDay = (day, n) => {
   const nthDay = new Date(day);
+  nthDay.setDate(nthDay.getDate() + 1);
   while (String(nthDay.getDate()) !== n) {
-    nthDay.setDate(nthDay.getDate() + 1)
+    nthDay.setDate(nthDay.getDate() + 1);
   }
   return nthDay;
+}
+
+const previousLastDay = (day) => {
+  const nthDay = new Date(day);
+  nthDay.setDate(nthDay.getDate() - 1);
+  while (!isLastDayOfMonth(nthDay)) {
+    nthDay.setDate(nthDay.getDate() - 1);
+  }
+  return nthDay;
+};
+
+const previousNthNamedDay = (day, n, dayName) => {
+  const nthDay = new Date(day);
+  nthDay.setDate(nthDay.getDate() - 1);
+  while (!isNthNamedDay(nthDay, n, dayName)) {
+    nthDay.setDate(nthDay.getDate() - 1);
+  }
+  return nthDay;
+};
+
+const nextNthNamedDay = (day, n, dayName) => {
+  const nthDay = new Date(day);
+  nthDay.setDate(nthDay.getDate() + 1);
+  while (!isNthNamedDay(nthDay, n, dayName)) {
+    nthDay.setDate(nthDay.getDate() + 1);
+  }
+  return nthDay;
+};
+
+const previousNthWeekday = (day, n) => {
+  const nthDay = new Date(day);
+  nthDay.setDate(nthDay.getDate() - 1);
+  while (!isNthWeekday(nthDay, n)) {
+    nthDay.setDate(nthDay.getDate() - 1);
+  }
+  return nthDay;
+};
+
+const nextNthWeekday = (day, n) => {
+  const nthDay = new Date(day);
+  nthDay.setDate(nthDay.getDate() + 1);
+  while (!isNthWeekday(nthDay, n)) {
+    nthDay.setDate(nthDay.getDate() + 1);
+  }
+  return nthDay;
+};
+
+const previousLastWeekday = (day) => {
+  const nthDay = new Date(day);
+  nthDay.setDate(nthDay.getDate() - 1);
+  while (!isLastWeekday(nthDay)) {
+    nthDay.setDate(nthDay.getDate() - 1);
+  }
+  return nthDay;
+};
+
+const nextLastWeekday = (day) => {
+  const nthDay = new Date(day);
+  nthDay.setDate(nthDay.getDate() + 1);
+  while (!isLastWeekday(nthDay)) {
+    nthDay.setDate(nthDay.getDate() + 1);
+  }
+  return nthDay;
+};
+
+const previousLastWorkingDay = (day) => {
+  const nthDay = new Date(day);
+  nthDay.setDate(nthDay.getDate() - 1);
+  while (!isLastWorkingDay(nthDay)) {
+    nthDay.setDate(nthDay.getDate() - 1);
+  }
+  return nthDay;
+};
+
+const nextLastWorkingDay = (day) => {
+  const nthDay = new Date(day);
+  nthDay.setDate(nthDay.getDate() + 1);
+  while (!isLastWorkingDay(nthDay)) {
+    nthDay.setDate(nthDay.getDate() + 1);
+  }
+  return nthDay;
+};
+
+const previousNthWorkingDay = (day, n) => {
+  const nthDay = new Date(day);
+  nthDay.setDate(nthDay.getDate() - 1);
+  while (!isNthWorkingDay(nthDay, n)) {
+    nthDay.setDate(nthDay.getDate() - 1);
+  }
+  return nthDay;
+};
+
+const nextNthWorkingDay = (day, n) => {
+  const nthDay = new Date(day);
+  nthDay.setDate(nthDay.getDate() + 1);
+  while (!isNthWorkingDay(nthDay, n)) {
+    nthDay.setDate(nthDay.getDate() + 1);
+  }
+  return nthDay;
+};
+
+const endOfPreviousDay = (day) => {
+  return endOfDay(addDays(day, -1));
 }
 
 /**
@@ -196,12 +322,12 @@ const getDateRangeFromSettingAndReference = (setting, reference) => {
     if (isNamedDay(reference, part1)) {
       return [
         startOfDay(reference),
-        endOfDay(addDays(reference, 7))
+        endOfPreviousDay(nextNamedDay(reference, part1))
       ]
     }
     return [
       previousNamedDay(reference, part1),
-      endOfDay(addDays(nextNamedDay(reference, part1), -1))
+      endOfPreviousDay(nextNamedDay(reference, part1))
     ]
   }
 
@@ -210,23 +336,23 @@ const getDateRangeFromSettingAndReference = (setting, reference) => {
       if (isLastDayOfMonth(reference)) {
         return [
           startOfDay(reference),
-          endOfDay(addDays(lastDayOfMonth(addDays(reference, 1)), -1))
+          endOfPreviousDay(lastDayOfMonth(addDays(reference, 1)))
         ]
       }
       return [
-        addDays(startOfMonth(reference), -1),
-        endOfDay(addDays(lastDayOfMonth(reference), -1))
-      ]
+        previousLastDay(reference),
+        endOfPreviousDay(lastDayOfMonth(reference))
+      ];
     }
-    if (String(reference.getDate()) === part1) {
+    if (isNthDay(reference, part1)) {
       return [
         startOfDay(reference),
-        endOfDay(addDays(addMonths(reference, 1), -1))
+        endOfPreviousDay(nextNthDay(reference, part1))
       ]
     }
     return [
       previousNthDay(reference, part1),
-      endOfDay(addDays(nextNthDay(reference, part1), -1))
+      endOfPreviousDay(nextNthDay(reference, part1))
     ]
   }
 
@@ -235,14 +361,27 @@ const getDateRangeFromSettingAndReference = (setting, reference) => {
       if (isLastWeekday(reference)) {
         return [
           startOfDay(reference),
-          endOfDay(addDays(lastDayOfMonth(addDays(reference, 7)), -1))
+          endOfPreviousDay(nextLastWeekday(reference))
         ]
       }
       return [
-        previousWeekDay(startOfMonth(reference)),
-        endOfDay(addDays(lastWeekDay(reference), -1))
+        previousLastWeekday(reference),
+        endOfPreviousDay(nextLastWeekday(reference))
       ]
     }
+    if (!['1', '2', '3'].includes(part1)) {
+      throw new Error('Only first, second or third named days allowed.');
+    }
+    if (isNthWeekday(reference, part1)) {
+      return [
+        startOfDay(reference),
+        endOfPreviousDay(nextNthWeekday(reference, part1))
+      ]
+    }
+    return [
+      previousNthWeekday(reference, part1),
+      endOfPreviousDay(nextNthWeekday(reference, part1))
+    ]
   }
 
   if (part2 === 'working') {
@@ -250,14 +389,27 @@ const getDateRangeFromSettingAndReference = (setting, reference) => {
       if (isLastWorkingDay(reference)) {
         return [
           startOfDay(reference),
-          endOfDay(addDays(lastWorkingDay(addDays(reference, 7)), -1))
+          endOfPreviousDay(nextLastWorkingDay(reference))
         ]
       }
       return [
-        previousWeekDay(startOfMonth(reference)),
-        endOfDay(addDays(lastWeekDay(reference), -1))
+        previousLastWorkingDay(reference),
+        endOfPreviousDay(nextLastWorkingDay(reference))
       ]
     }
+    if (!['1', '2', '3'].includes(part1)) {
+      throw new Error('Only first, second or third named days allowed.');
+    }
+    if (isNthWorkingDay(reference, part1)) {
+      return [
+        startOfDay(reference),
+        endOfPreviousDay(nextNthWorkingDay(reference, part1))
+      ]
+    }
+    return [
+      previousNthWorkingDay(reference, part1),
+      endOfPreviousDay(nextNthWorkingDay(reference, part1))
+    ]
   }
 
   // part2 must be day of week (Monday)
@@ -265,26 +417,33 @@ const getDateRangeFromSettingAndReference = (setting, reference) => {
     if (isLastNamedDay(reference, part2)) {
       return [
         startOfDay(reference),
-        endOfDay(addDays(lastNamedDay(addDays(reference, 7), part2), -1))
+        endOfPreviousDay(nextLastNamedDay(reference, part2))
       ]
     }
     return [
-      startOfDay(previousLastNamedDay(reference, part2)),
-      endOfDay(addDays(lastNamedDay(addDays(previousLastNamedDay(reference, part2), 7), part2), -1))
+      previousLastNamedDay(reference, part2),
+      endOfPreviousDay(nextLastNamedDay(reference, part2)),
     ]
   }
-
-  // fallback returning reference as start 
-  // and a month later as end
+  if (!['1', '2', '3'].includes(part1)) {
+    throw new Error('Only first, second or third named days allowed.');
+  }
+  if (isNthNamedDay(reference, part1, part2)) {
+    return [
+      startOfDay(reference),
+      endOfPreviousDay(nextNthNamedDay(reference, part1, part2))
+    ]
+  }
   return [
-    startOfDay(reference),
-    endOfDay(addDays(addMonths(reference), -1))
-  ];
+    previousNthNamedDay(reference, part1, part2),
+    endOfPreviousDay(nextNthNamedDay(reference, part1, part2)),
+  ]
 };
 
 module.exports = {
   getAllDaysInMonth,
   forEachDayBetween,
+  isNthDay,
   isLastWeekday,
   isNthWeekday,
   isBankHoliday,
@@ -299,11 +458,24 @@ module.exports = {
   isNamedDay,
   previousNamedDay,
   previousLastNamedDay,
+  nextLastNamedDay,
   nextNamedDay,
   isLastNamedDay,
   lastNamedDay,
   isNthNamedDay,
   previousNthDay,
   nextNthDay,
-  getDateRangeFromSettingAndReference
+  previousLastDay,
+  endOfPreviousDay,
+  getDateRangeFromSettingAndReference,
+  previousNthNamedDay,
+  nextNthNamedDay,
+  previousNthWeekday,
+  nextNthWeekday,
+  previousLastWeekday,
+  nextLastWeekday,
+  previousLastWorkingDay,
+  nextLastWorkingDay,
+  previousNthWorkingDay,
+  nextNthWorkingDay
 }

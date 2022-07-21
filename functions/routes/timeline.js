@@ -2,7 +2,7 @@ const express = require('express');
 const { getFirestore } = require('firebase-admin/firestore');
 const router = express.Router();
 
-const { getDateRangeFromSettingAndReference } = require('./util/date');
+const { getDateRangeFromSettingAndReference } = require('../util/date');
 
 const getDateRange = (settings, reference) => {
   return getDateRangeFromSettingAndReference(settings, reference);
