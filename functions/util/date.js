@@ -371,7 +371,7 @@ const getDateRangeFromSettingAndReference = (setting, reference) => {
       ]
     }
     return [
-      previousNamedDay(reference, part1),
+      startOfDay(previousNamedDay(reference, part1)),
       endOfPreviousDay(nextNamedDay(reference, part1))
     ]
   }

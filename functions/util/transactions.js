@@ -44,6 +44,11 @@ last:Friday (last friday of the month)
 1:working (first working day of the month)
 2:working (second working day of the month)
 last:working (last working day of the month)
+1:weeks:{starting} (INVALID)
+2:weeks:{starting} (every two weeks starting on...)
+3:weeks:{starting} (every three weeks starting on...)
+4:weeks:{starting} (every four weeks starting on...)
+5:weeks:{starting} (INVALID)
 **/
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const getPendingTransactionsFromRecurring = (transaction, endDate, startDate) => {

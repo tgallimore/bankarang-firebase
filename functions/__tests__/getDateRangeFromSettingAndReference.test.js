@@ -162,6 +162,44 @@ describe('getDateRangeFromSettingAndReference()', () => {
     });
   });
 
+  describe('Monday', () => {
+    const referenceDates = [
+      ['2022-05-02', ['2022-05-02', '2022-05-09']],
+      ['2022-05-05', ['2022-05-02', '2022-05-09']],
+      ['2022-05-09', ['2022-05-09', '2022-05-16']],
+    ];
+
+    referenceDates.forEach(([reference, dates]) => {
+      const today = new Date(reference);
+      const start = startOfDay(new Date(dates[0]));
+      const end = endOfPreviousDay(new Date(dates[1]));
+
+      test(`${prettyDate(today)} returns [${prettyDate(start)}, ${prettyDate(end)}]`, () => {
+        expect(getDateRangeFromSettingAndReference('Monday', today))
+          .toEqual([start, end]);
+      });
+    });
+  });
+
+  describe('Tuesday', () => {
+    const referenceDates = [
+      ['2022-05-03', ['2022-05-03', '2022-05-10']],
+      ['2022-05-05', ['2022-05-03', '2022-05-10']],
+      ['2022-05-10', ['2022-05-10', '2022-05-17']],
+    ];
+
+    referenceDates.forEach(([reference, dates]) => {
+      const today = new Date(reference);
+      const start = startOfDay(new Date(dates[0]));
+      const end = endOfPreviousDay(new Date(dates[1]));
+
+      test(`${prettyDate(today)} returns [${prettyDate(start)}, ${prettyDate(end)}]`, () => {
+        expect(getDateRangeFromSettingAndReference('Tuesday', today))
+          .toEqual([start, end]);
+      });
+    });
+  });
+
   const FIRST_DAY_OF_MONTH = '1:day';
   describe(FIRST_DAY_OF_MONTH, () => {
     const referenceDates = [
@@ -311,7 +349,7 @@ describe('getDateRangeFromSettingAndReference()', () => {
       referenceDates.forEach((referenceDate) => {
         const day = new Date(referenceDate);
         daysOfTheWeek.forEach((dayOfTheWeek) => {
-          const start = isNamedDay(day, dayOfTheWeek) ? startOfDay(day) : previousNamedDay(day, dayOfTheWeek);
+          const start = isNamedDay(day, dayOfTheWeek) ? startOfDay(day) : startOfDay(previousNamedDay(day, dayOfTheWeek));
           const end = endOfPreviousDay(nextNamedDay(day, dayOfTheWeek));
   
           describe(`on ${prettyDate(day)}`, () => {  
