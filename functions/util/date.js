@@ -11,7 +11,25 @@ const isWeekend = require('date-fns/isWeekend');
 const isEqual = require('date-fns/isEqual');
 const endOfDay = require('date-fns/endOfDay');
 const isLastDayOfMonth = require('date-fns/isLastDayOfMonth');
+const formatDate = require('date-fns/format');
+const isMonday = require('date-fns/isMonday');
+const isTuesday = require('date-fns/isTuesday');
+const isWednesday = require('date-fns/isWednesday');
+const isThursday = require('date-fns/isThursday');
+const isFriday = require('date-fns/isFriday');
+const isSaturday = require('date-fns/isSaturday');
+const isSunday = require('date-fns/isSunday');
 const bankHolidays = require('./bank-holidays.json');
+
+const isNamedDays = {
+  Monday: isMonday,
+  Tuesday: isTuesday,
+  Wednesday: isWednesday,
+  Thursday: isThursday,
+  Friday: isFriday,
+  Saturday: isSaturday,
+  Sunday: isSunday,
+};
 
 const getAllDaysInMonth = (day) => {
   const month = day.getMonth() + 1;
@@ -54,7 +72,8 @@ const isBankHoliday = (day) => {
   // yyyy-mm-ddT23:00:00
   // but will be the day before at 23:00
   // use date-fns format instead
-  const dayString = day.toISOString().split('T')[0];
+  // const dayString = day.toISOString().split('T')[0];
+  const dayString = formatDate(day, 'yyyy-MM-dd');
   return bankHolidays.find(({date: holiday}) => holiday === dayString);
 }
 
@@ -118,7 +137,9 @@ const isNthWorkingDay = (day, n) => {
 }
 
 const isNamedDay = (day, dayName) => {
-  return day.toLocaleString('en-gb', { weekday:'long' }).toLowerCase() === dayName.toLowerCase();
+  return isNamedDays[dayName](day);
+  // Don't use below because its well slow
+  // return day.toLocaleString('en-gb', { weekday:'long' }).toLowerCase() === dayName.toLowerCase();
 }
 
 const isLastNamedDay = (day, dayName) => {
