@@ -6,7 +6,6 @@ const endOfMonth = require('date-fns/endOfMonth');
 const previousFriday = require('date-fns/previousFriday');
 const nextMonday = require('date-fns/nextMonday');
 const addDays = require('date-fns/addDays');
-const addMonths = require('date-fns/addMonths');
 const isWeekend = require('date-fns/isWeekend');
 const isEqual = require('date-fns/isEqual');
 const endOfDay = require('date-fns/endOfDay');
@@ -48,6 +47,26 @@ const forEachDayBetween = (from, to, cb) => {
     cb(d);
   }
 }
+
+const forwardWeekIntervals = (from, to, interval) => {
+  const start = new Date(from);
+  const end = new Date(to);
+  const result = [];
+  for (let d = start; d <= end; d = startOfDay(addDays(d, interval * 7))) {
+    result.push(d);
+  }
+  return result;
+};
+
+const backwardWeekIntervals = (from, to, interval) => {
+  const start = new Date(from);
+  const end = new Date(to);
+  const result = [];
+  for (let d = start; d >= end; d = startOfDay(addDays(d, -(interval * 7)))) {
+    result.unshift(d);
+  }
+  return result;
+};
 
 const isNthDay = (day, n) => {
   return String(day.getDate()) === n;
@@ -334,9 +353,14 @@ last:Friday (last friday of the month)
 1:working (first working day of the month)
 2:working (second working day of the month)
 last:working (last working day of the month)
+1:weeks:{starting} (INVALID)
+2:weeks:{starting} (every two weeks starting on...)
+3:weeks:{starting} (every three weeks starting on...)
+4:weeks:{starting} (every four weeks starting on...)
+5:weeks:{starting} (INVALID)
 **/
 const getDateRangeFromSettingAndReference = (setting, reference) => {
-  const [part1, part2] = setting.split(':');
+  const [part1, part2, part3] = setting.split(':');
 
   // part1 must be a day of the week (Monday)
   if (!part2) {
@@ -350,6 +374,28 @@ const getDateRangeFromSettingAndReference = (setting, reference) => {
       previousNamedDay(reference, part1),
       endOfPreviousDay(nextNamedDay(reference, part1))
     ]
+  }
+
+  if (part2 === 'weeks') {
+    if (!['2', '3', '4'].includes(part1)) {
+      throw new Error('Must provide valid part1 for every x weeks (2, 3, or 4)');
+    }
+    const start = new Date(part3);
+    if (isNaN(start.getTime())) {
+      throw new Error('Must provide a valid start date for every x weeks (yyyy-MM-dd)');
+    }
+    const interval = parseInt(part1);
+    const end = reference >= start
+      ? addDays(reference, 7 * 5)
+      : addDays(reference, -(7 * 5));
+    const targetDates = reference >= start
+      ? forwardWeekIntervals(start, end, interval)
+      : backwardWeekIntervals(start, end, interval);
+    const endDateIndex = targetDates.findIndex((date) => reference < date);
+    return [
+      targetDates[endDateIndex - 1],
+      endOfPreviousDay(targetDates[endDateIndex])
+    ];
   }
 
   if (part2 === 'day') {
@@ -498,5 +544,6 @@ module.exports = {
   previousLastWorkingDay,
   nextLastWorkingDay,
   previousNthWorkingDay,
-  nextNthWorkingDay
+  nextNthWorkingDay,
+  forwardWeekIntervals
 }

@@ -51,6 +51,117 @@ describe('getDateRangeFromSettingAndReference()', () => {
     'Sunday'
   ];
 
+  describe('2:weeks:2022-01-01', () => {
+    const referenceDates = [
+      ['2022-01-20', ['2022-01-15', '2022-01-29']],
+      ['2022-05-13', ['2022-05-07', '2022-05-21']],
+      ['2022-05-07', ['2022-05-07', '2022-05-21']],
+      ['2022-05-20', ['2022-05-07', '2022-05-21']],
+      ['2022-05-21', ['2022-05-21', '2022-06-04']],
+    ];
+    referenceDates.forEach(([reference, dates]) => {
+      const today = new Date(reference);
+      const start = startOfDay(new Date(dates[0]));
+      const end = endOfPreviousDay(new Date(dates[1]));
+
+      test(`${prettyDate(today)} returns [${prettyDate(start)}, ${prettyDate(end)}]`, () => {
+        expect(getDateRangeFromSettingAndReference('2:weeks:2022-01-01', today))
+          .toEqual([start, end]);
+      });
+    });
+  });
+
+  describe('2:weeks:2022-07-02', () => {
+    const referenceDates = [
+      ['2022-01-01', ['2022-01-01', '2022-01-15']],
+      ['2022-01-20', ['2022-01-15', '2022-01-29']],
+      ['2022-05-13', ['2022-05-07', '2022-05-21']],
+      ['2022-05-07', ['2022-05-07', '2022-05-21']],
+      ['2022-05-20', ['2022-05-07', '2022-05-21']],
+      ['2022-05-21', ['2022-05-21', '2022-06-04']],
+    ];
+    referenceDates.forEach(([reference, dates]) => {
+      const today = new Date(reference);
+      const start = startOfDay(new Date(dates[0]));
+      const end = endOfPreviousDay(new Date(dates[1]));
+
+      test(`${prettyDate(today)} returns [${prettyDate(start)}, ${prettyDate(end)}]`, () => {
+        expect(getDateRangeFromSettingAndReference('2:weeks:2022-07-02', today))
+          .toEqual([start, end]);
+      });
+    });
+  });
+
+  describe('4:weeks:2022-01-01', () => {
+    const referenceDates = [
+      ['2022-01-01', ['2022-01-01', '2022-01-29']],
+      ['2022-01-20', ['2022-01-01', '2022-01-29']],
+      ['2022-05-13', ['2022-04-23', '2022-05-21']],
+      ['2022-05-07', ['2022-04-23', '2022-05-21']],
+    ];
+    referenceDates.forEach(([reference, dates]) => {
+      const today = new Date(reference);
+      const start = startOfDay(new Date(dates[0]));
+      const end = endOfPreviousDay(new Date(dates[1]));
+
+      test(`${prettyDate(today)} returns [${prettyDate(start)}, ${prettyDate(end)}]`, () => {
+        expect(getDateRangeFromSettingAndReference('4:weeks:2022-01-01', today))
+          .toEqual([start, end]);
+      });
+    });
+  });
+
+  describe('3:weeks:2022-01-01', () => {
+    const referenceDates = [
+      ['2022-01-01', ['2022-01-01', '2022-01-22']],
+      ['2022-01-20', ['2022-01-01', '2022-01-22']],
+      ['2022-05-13', ['2022-05-07', '2022-05-28']],
+      ['2022-05-07', ['2022-05-07', '2022-05-28']],
+    ];
+    referenceDates.forEach(([reference, dates]) => {
+      const today = new Date(reference);
+      const start = startOfDay(new Date(dates[0]));
+      const end = endOfPreviousDay(new Date(dates[1]));
+
+      test(`${prettyDate(today)} returns [${prettyDate(start)}, ${prettyDate(end)}]`, () => {
+        expect(getDateRangeFromSettingAndReference('3:weeks:2022-01-01', today))
+          .toEqual([start, end]);
+      });
+    });
+  });
+
+  describe('3:weeks:2022-04-29', () => {
+    const referenceDates = [
+      ['2022-02-12', ['2022-02-04', '2022-02-25']],
+      ['2022-07-02', ['2022-07-01', '2022-07-22']],
+      ['2022-08-31', ['2022-08-12', '2022-09-02']],
+      [
+        addDays(new Date('2022-04-29'), ((7*3) * 123) + 4), // add 3 weeks 123 times, then add another 4 days
+        [
+          addDays(new Date('2022-04-29'), ((7*3) * 123)), // the start will be without the 4 days
+          addDays(new Date('2022-04-29'), ((7*3) * 124)), // the end will be another 3 weeks
+        ]
+      ],
+      [
+        addDays(new Date('2022-04-29'), -(((7*3) * 123) + 4)), // minus 3 weeks 123 times, then minus another 4 days
+        [
+          addDays(new Date('2022-04-29'), -((7*3) * 124)), // the start will be another 3 weeks
+          addDays(new Date('2022-04-29'), -((7*3) * 123)), // the end will be without the 4 days
+        ]
+      ],
+    ];
+    referenceDates.forEach(([reference, dates]) => {
+      const today = new Date(reference);
+      const start = startOfDay(new Date(dates[0]));
+      const end = endOfPreviousDay(new Date(dates[1]));
+
+      test(`${prettyDate(today)} returns [${prettyDate(start)}, ${prettyDate(end)}]`, () => {
+        expect(getDateRangeFromSettingAndReference('3:weeks:2022-04-29', today))
+          .toEqual([start, end]);
+      });
+    });
+  });
+
   const FIRST_DAY_OF_MONTH = '1:day';
   describe(FIRST_DAY_OF_MONTH, () => {
     const referenceDates = [
@@ -93,7 +204,7 @@ describe('getDateRangeFromSettingAndReference()', () => {
     });
   });
 
-  describe('using computed logic', () => {
+  describe('Using computed logic', () => {
     const referenceDates = [
       '2020-01-12',
       '2020-02-28',
