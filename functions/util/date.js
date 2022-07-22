@@ -42,7 +42,6 @@ const getAllDaysInMonth = (day) => {
 const forEachDayBetween = (from, to, cb) => {
   const start = new Date(from);
   const end = new Date(to);
-  start.setDate(start.getDate() + 1);
   for (let d = start; d <= end; d.setDate(d.getDate() + 1)) {
     cb(d);
   }
@@ -53,7 +52,7 @@ const forwardWeekIntervals = (from, to, interval) => {
   const end = new Date(to);
   const result = [];
   for (let d = start; d <= end; d = startOfDay(addDays(d, interval * 7))) {
-    result.push(d);
+    result.push(startOfDay(d));
   }
   return result;
 };
@@ -63,7 +62,7 @@ const backwardWeekIntervals = (from, to, interval) => {
   const end = new Date(to);
   const result = [];
   for (let d = start; d >= end; d = startOfDay(addDays(d, -(interval * 7)))) {
-    result.unshift(d);
+    result.unshift(startOfDay(d));
   }
   return result;
 };
@@ -102,7 +101,7 @@ const previousWeekDay = (day) => {
   while (isWeekend(weekDay)) {
     weekDay.setDate(weekDay.getDate() - 1)
   }
-  return weekDay;
+  return startOfDay(weekDay);
 }
 
 const nextWeekDay = (day) => {
@@ -111,13 +110,13 @@ const nextWeekDay = (day) => {
   while (isWeekend(weekDay)) {
     weekDay.setDate(weekDay.getDate() + 1);
   }
-  return weekDay;
+  return startOfDay(weekDay);
 }
 
 const lastWeekDay = (day) => {
   const lastDay = lastDayOfMonth(day);
   const lastWeekDay = isWeekend(lastDay) ? previousFriday(lastDay) : lastDay;
-  return lastWeekDay;
+  return startOfDay(lastWeekDay);
 }
 
 const previousWorkingDay = (day) => {
@@ -126,7 +125,7 @@ const previousWorkingDay = (day) => {
   while (isWeekend(workingDay) || isBankHoliday(workingDay)) {
     workingDay.setDate(workingDay.getDate() - 1);
   }
-  return workingDay;
+  return startOfDay(workingDay);
 }
 
 const nextWorkingDay = (day) => {
@@ -135,7 +134,7 @@ const nextWorkingDay = (day) => {
   while (isWeekend(workingDay) || isBankHoliday(workingDay)) {
     workingDay.setDate(workingDay.getDate() + 1);
   }
-  return workingDay;
+  return startOfDay(workingDay);
 }
 
 const isLastWorkingDay = (day) => {
@@ -147,7 +146,7 @@ const isLastWorkingDay = (day) => {
 const lastWorkingDay = (day) => {
   const lastDay = lastDayOfMonth(day);
   const lastWorkingDay = (isWeekend(lastDay) || isBankHoliday(lastDay)) ? previousWorkingDay(lastDay) : lastDay;
-  return lastWorkingDay;
+  return startOfDay(lastWorkingDay);
 }
 
 const isNthWorkingDay = (day, n) => {
@@ -173,7 +172,7 @@ const nextNamedDay = (day, dayName) => {
   while (!isNamedDay(namedDay, dayName)) {
     namedDay.setDate(namedDay.getDate() + 1);
   }
-  return namedDay;
+  return startOfDay(namedDay);
 }
 
 const previousNamedDay = (day, dayName) => {
@@ -182,13 +181,13 @@ const previousNamedDay = (day, dayName) => {
   while (!isNamedDay(namedDay, dayName)) {
     namedDay.setDate(namedDay.getDate() - 1);
   }
-  return namedDay;
+  return startOfDay(namedDay);
 }
 
 const lastNamedDay = (day, dayName) => {
   const lastDay = lastDayOfMonth(day);
   const lastNamedDay = !isNamedDay(lastDay, dayName) ? previousNamedDay(lastDay, dayName) : lastDay;
-  return lastNamedDay;
+  return startOfDay(lastNamedDay);
 }
 
 const previousLastNamedDay = (day, dayName) => {
@@ -197,7 +196,7 @@ const previousLastNamedDay = (day, dayName) => {
   while (!isLastNamedDay(previousLastNamedDay, dayName)) {
     previousLastNamedDay.setDate(previousLastNamedDay.getDate() - 1);
   }
-  return previousLastNamedDay;
+  return startOfDay(previousLastNamedDay);
 }
 
 const nextLastNamedDay = (day, dayName) => {
@@ -206,7 +205,7 @@ const nextLastNamedDay = (day, dayName) => {
   while (!isLastNamedDay(nextLastNamedDay, dayName)) {
     nextLastNamedDay.setDate(nextLastNamedDay.getDate() + 1);
   }
-  return nextLastNamedDay;
+  return startOfDay(nextLastNamedDay);
 }
 
 const isNthNamedDay = (day, n, dayName) => {
@@ -220,7 +219,7 @@ const previousNthDay = (day, n) => {
   while (String(nthDay.getDate()) !== n) {
     nthDay.setDate(nthDay.getDate() - 1);
   }
-  return nthDay;
+  return startOfDay(nthDay);
 }
 
 const nextNthDay = (day, n) => {
@@ -229,7 +228,7 @@ const nextNthDay = (day, n) => {
   while (String(nthDay.getDate()) !== n) {
     nthDay.setDate(nthDay.getDate() + 1);
   }
-  return nthDay;
+  return startOfDay(nthDay);
 }
 
 const previousLastDay = (day) => {
@@ -238,7 +237,7 @@ const previousLastDay = (day) => {
   while (!isLastDayOfMonth(nthDay)) {
     nthDay.setDate(nthDay.getDate() - 1);
   }
-  return nthDay;
+  return startOfDay(nthDay);
 };
 
 const previousNthNamedDay = (day, n, dayName) => {
@@ -247,7 +246,7 @@ const previousNthNamedDay = (day, n, dayName) => {
   while (!isNthNamedDay(nthDay, n, dayName)) {
     nthDay.setDate(nthDay.getDate() - 1);
   }
-  return nthDay;
+  return startOfDay(nthDay);
 };
 
 const nextNthNamedDay = (day, n, dayName) => {
@@ -256,7 +255,7 @@ const nextNthNamedDay = (day, n, dayName) => {
   while (!isNthNamedDay(nthDay, n, dayName)) {
     nthDay.setDate(nthDay.getDate() + 1);
   }
-  return nthDay;
+  return startOfDay(nthDay);
 };
 
 const previousNthWeekday = (day, n) => {
@@ -265,7 +264,7 @@ const previousNthWeekday = (day, n) => {
   while (!isNthWeekday(nthDay, n)) {
     nthDay.setDate(nthDay.getDate() - 1);
   }
-  return nthDay;
+  return startOfDay(nthDay);
 };
 
 const nextNthWeekday = (day, n) => {
@@ -274,7 +273,7 @@ const nextNthWeekday = (day, n) => {
   while (!isNthWeekday(nthDay, n)) {
     nthDay.setDate(nthDay.getDate() + 1);
   }
-  return nthDay;
+  return startOfDay(nthDay);
 };
 
 const previousLastWeekday = (day) => {
@@ -283,7 +282,7 @@ const previousLastWeekday = (day) => {
   while (!isLastWeekday(nthDay)) {
     nthDay.setDate(nthDay.getDate() - 1);
   }
-  return nthDay;
+  return startOfDay(nthDay);
 };
 
 const nextLastWeekday = (day) => {
@@ -292,7 +291,7 @@ const nextLastWeekday = (day) => {
   while (!isLastWeekday(nthDay)) {
     nthDay.setDate(nthDay.getDate() + 1);
   }
-  return nthDay;
+  return startOfDay(nthDay);
 };
 
 const previousLastWorkingDay = (day) => {
@@ -301,7 +300,7 @@ const previousLastWorkingDay = (day) => {
   while (!isLastWorkingDay(nthDay)) {
     nthDay.setDate(nthDay.getDate() - 1);
   }
-  return nthDay;
+  return startOfDay(nthDay);
 };
 
 const nextLastWorkingDay = (day) => {
@@ -310,7 +309,7 @@ const nextLastWorkingDay = (day) => {
   while (!isLastWorkingDay(nthDay)) {
     nthDay.setDate(nthDay.getDate() + 1);
   }
-  return nthDay;
+  return startOfDay(nthDay);
 };
 
 const previousNthWorkingDay = (day, n) => {
@@ -319,7 +318,7 @@ const previousNthWorkingDay = (day, n) => {
   while (!isNthWorkingDay(nthDay, n)) {
     nthDay.setDate(nthDay.getDate() - 1);
   }
-  return nthDay;
+  return startOfDay(nthDay);
 };
 
 const nextNthWorkingDay = (day, n) => {
@@ -328,7 +327,7 @@ const nextNthWorkingDay = (day, n) => {
   while (!isNthWorkingDay(nthDay, n)) {
     nthDay.setDate(nthDay.getDate() + 1);
   }
-  return nthDay;
+  return startOfDay(nthDay);
 };
 
 const endOfPreviousDay = (day) => {
@@ -545,5 +544,6 @@ module.exports = {
   nextLastWorkingDay,
   previousNthWorkingDay,
   nextNthWorkingDay,
-  forwardWeekIntervals
+  forwardWeekIntervals,
+  backwardWeekIntervals
 }

@@ -1,5 +1,7 @@
 const isWeekend = require('date-fns/isWeekend');
 const isLastDayOfMonth = require('date-fns/isLastDayOfMonth');
+const isAfter = require('date-fns/isAfter');
+const isBefore = require('date-fns/isBefore');
 
 const {
   forEachDayBetween,
@@ -11,6 +13,8 @@ const {
   isNamedDay,
   isLastNamedDay,
   isNthNamedDay,
+  forwardWeekIntervals,
+  backwardWeekIntervals
 } = require('./date');
 
 const createPendingTransaction = (transaction, date) => ({
@@ -52,8 +56,8 @@ last:working (last working day of the month)
 **/
 const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 const getPendingTransactionsFromRecurring = (transaction, endDate, startDate) => {
-  const {recurring } = transaction;
-  const [part1, part2] = recurring.split(':');
+  const {recurring} = transaction;
+  const [part1, part2, part3] = recurring.split(':');
   const acc = [];
 
   if (part1 === 'day') {
@@ -88,7 +92,7 @@ const getPendingTransactionsFromRecurring = (transaction, endDate, startDate) =>
     return acc;
   }
 
-  if (!part2 || part2 === 'day') {
+  if (part2 === 'day') {
     forEachDayBetween(startDate, endDate, (day) => {
       if (part1 === 'last' && isLastDayOfMonth(day)) {
         acc.push(createPendingTransaction(transaction, day));
@@ -107,8 +111,8 @@ const getPendingTransactionsFromRecurring = (transaction, endDate, startDate) =>
           acc.push(createPendingTransaction(transaction, day));
         }
       } else {
-        if (part1 !== '1') {
-          throw new Error('Only first or last weekday is supported.');
+        if (!['1', '2', '3'].includes(part1)) {
+          throw new Error('Only first, second, third or last weekday is supported.');
         } else if (isNthWeekday(day, parseInt(part1))) {
           acc.push(createPendingTransaction(transaction, day));
         }
@@ -129,6 +133,32 @@ const getPendingTransactionsFromRecurring = (transaction, endDate, startDate) =>
         }
       }
     });
+    return acc;
+  }
+
+  if (part2 === 'weeks') {
+    if (!['2', '3', '4'].includes(part1)) {
+      throw new Error('Must provide valid part1 for every x weeks (2, 3, or 4)');
+    }
+    const referencePoint = new Date(part3);
+    if (isNaN(referencePoint.getTime())) {
+      throw new Error('Must provide a valid referencePoint date for every x weeks (yyyy-MM-dd)');
+    }
+    const interval = parseInt(part1);
+    const targetDates =
+      referencePoint <= startDate
+        ? forwardWeekIntervals(referencePoint, endDate, interval)
+        : referencePoint >= endDate
+          ? backwardWeekIntervals(referencePoint, startDate, interval)
+          // referencePoint must be between start and end date
+          : [
+            ...backwardWeekIntervals(referencePoint, startDate, interval),
+            ...forwardWeekIntervals(referencePoint, endDate, interval).slice(1)
+          ];
+    const transactions = targetDates
+      .filter((targetDate) => !isBefore(targetDate, startDate) && !isAfter(targetDate, endDate))
+      .map((targetDate) => createPendingTransaction(transaction, targetDate));
+    acc.push(...transactions);
     return acc;
   }
 
