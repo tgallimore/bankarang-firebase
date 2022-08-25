@@ -242,6 +242,28 @@ describe('getDateRangeFromSettingAndReference()', () => {
     });
   });
 
+  const LAST_FRIDAY_OF_MONTH = 'last:Friday';
+  describe(LAST_FRIDAY_OF_MONTH, () => {
+    const referenceDates = [
+      ['2020-01-01', ['2019-12-27', '2020-01-31']],
+      ['2033-03-15', ['2033-02-25', '2033-03-25']],
+      ['2022-11-30', ['2022-11-25', '2022-12-30']],
+      ['2020-02-29', ['2020-02-28', '2020-03-27']],
+      ['2020-03-01', ['2020-02-28', '2020-03-27']],
+      ['2020-02-11', ['2020-01-31', '2020-02-28']],
+      ['2022-08-25', ['2022-07-29', '2022-08-26']],
+    ];
+  
+    referenceDates.forEach(([reference, dates]) => {
+      const today = new Date(reference);
+      const start = startOfDay(new Date(dates[0]));
+      const end = endOfPreviousDay(new Date(dates[1]));
+      test(`${prettyDate(today)} returns [${prettyDate(start)}, ${prettyDate(end)}]`, () => {
+        expect(getDateRangeFromSettingAndReference(LAST_FRIDAY_OF_MONTH, today)).toEqual([start, end]);
+      });
+    });
+  });
+
   describe('Using computed logic', () => {
     const referenceDates = [
       '2020-01-12',

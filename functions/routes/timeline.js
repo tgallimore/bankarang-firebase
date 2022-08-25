@@ -16,8 +16,8 @@ router.get('/', async (req, res) => {
   const { date: reference } = req.query;
   const uid = req.user.uid;
   const db = getFirestore();
-  const settingsSnapshot = await db.collection('Settings').doc(uid).get();
-  const cycleStart = settingsSnapshot.cycleStart || '1:day';
+  const settingsSnapshot = await db.collection('UserSettings').doc(uid).get();
+  const cycleStart = settingsSnapshot?.data()?.cycleStart || '1:day';
   const dateRange = getDateRange(cycleStart, new Date(reference));
   return res.json(dateRange);
 });

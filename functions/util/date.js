@@ -191,7 +191,7 @@ const lastNamedDay = (day, dayName) => {
 }
 
 const previousLastNamedDay = (day, dayName) => {
-  let previousLastNamedDay = previousNamedDay(day, dayName);
+  let previousLastNamedDay = new Date(day);
   previousLastNamedDay.setDate(previousLastNamedDay.getDate() - 1);
   while (!isLastNamedDay(previousLastNamedDay, dayName)) {
     previousLastNamedDay.setDate(previousLastNamedDay.getDate() - 1);
@@ -200,7 +200,7 @@ const previousLastNamedDay = (day, dayName) => {
 }
 
 const nextLastNamedDay = (day, dayName) => {
-  let nextLastNamedDay = nextNamedDay(day, dayName);
+  let nextLastNamedDay = new Date(day);
   nextLastNamedDay.setDate(nextLastNamedDay.getDate() + 1);
   while (!isLastNamedDay(nextLastNamedDay, dayName)) {
     nextLastNamedDay.setDate(nextLastNamedDay.getDate() + 1);

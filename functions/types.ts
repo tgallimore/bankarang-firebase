@@ -87,7 +87,7 @@ type Budget = {
 /**
  * These will be loaded once when the user starts to the app
  * 
- * Queried by: { uid }
+ * Queried by documentID which is uid
  */
 type UserSettings = {
   financialPeriod?: string
