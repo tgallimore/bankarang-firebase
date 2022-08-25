@@ -45,7 +45,7 @@ type Transaction = {
   title: string
   subtitle?: string
   recurring?: string | null
-  savingAccount?: string
+  savingPot?: string
 }
 
 /**
@@ -70,6 +70,7 @@ type SavingPot = {
   bankAccountId: string
   start?: Date
   rules?: SavingPotRule[]
+  target?: number
 }
 
 /**

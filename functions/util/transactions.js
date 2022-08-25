@@ -24,7 +24,7 @@ const createPendingTransaction = (transaction, date) => ({
   amount: transaction.amount,
   account: transaction.account,
   recurring: transaction.recurring,
-  savingAccount: transaction.savingAccount,
+  savingPot: transaction.savingPot,
   _id: transaction._id + `__${new Date(date).getTime()}`,
   date: new Date(date),
   lastPaid: transaction.date,
