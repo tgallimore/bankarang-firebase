@@ -22,12 +22,11 @@ type BankConnection = {
  * Queried by: { uid, account_id, date }
  */
 type BankTransaction = {
-  transaction_id: string
-  title: string
-  amount: number
-  subtitle: number
+  bankAccountId: string
+  transactionId: string
   date: Date
-  category: string
+  budgetId?: string
+  savingPotId?: string
 }
 
 /**
