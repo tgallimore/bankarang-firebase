@@ -185,4 +185,47 @@ router.get('/', async (req, res) => {
   });
 });
 
+router.get('/truelayer', async (req, res) => {
+  const transactions = [];
+  const { from, to, account: accountId } = req.query;
+  const now = new Date();
+
+  const connection = res.locals.truelayerConnections
+    .find(({accounts}) => accounts.includes(accountId));
+  const { token } = connection;
+
+  /**
+   * Actual transactions
+   * Includes only transactions within the from/to date range
+   */
+  if (isDateAfter(now, new Date(from))) {
+    try {
+      const accountTransactions = await getTransactions(
+        accountId,
+        from,
+        isDateAfter(new Date(to), now) ? now.toISOString() : to,
+        token
+      );
+      transactions.push(...accountTransactions.results.map((result) => {
+        return {
+          ...result,
+          title: result.description,
+          subtitle: result.meta.provider_category,
+          amount: Math.floor(result.amount * 100),
+          account: accountId,
+          date: result.timestamp,
+          transaction_id: result.transaction_id,
+          running_balance: result.running_balance ? Math.floor(result.running_balance.amount * 100) : null, 
+          _id: result.transaction_id
+        }
+      }));
+    } catch (error) {
+      res.status(500);
+      return res.json(error);
+    }
+  }
+
+  return res.json(addDayTagsToTransactions(transactions));
+});
+
 module.exports = router;
