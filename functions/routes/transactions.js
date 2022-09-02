@@ -4,6 +4,7 @@ const router = express.Router();
 const isDateBefore = require('date-fns/isBefore');
 const isDateAfter = require('date-fns/isAfter');
 const isSameDay = require('date-fns/isSameDay');
+const addDays = require('date-fns/addDays');
 
 const { getTransactions } = require('../truelayer/api');
 const { getPendingTransactionsFromRecurring } = require('../util/transactions');
@@ -101,8 +102,8 @@ router.get('/', async (req, res) => {
       items
         .filter(({type, recurring}) => type === 'pending' && recurring)
         .forEach((transaction) => {
-          const getTransactionsFrom = includeAll || isDateBefore(new Date(from), new Date(transaction.date))
-            ? transaction.date
+          const getTransactionsFrom = includeAll || isDateBefore((new Date(from)), new Date(transaction.date))
+            ? addDays(new Date(transaction.date), 1).toISOString()
             : from;
           try {
             const pendingFromRecurringTransactions =
