@@ -38,6 +38,8 @@ router.get('/', async (req, res) => {
   const savingTransactions = [];
   const { from, to, account: accountId, includeAll = false } = req.query;
   const now = new Date();
+  const start = new Date(from);
+  const end = isDateAfter(new Date(to), now) ? now : new Date(to);
 
   const connection = res.locals.truelayerConnections
     .find(({accounts}) => !!accounts.find(({account_id}) => account_id === accountId));
@@ -47,25 +49,37 @@ router.get('/', async (req, res) => {
    * Actual transactions
    * Includes only transactions within the from/to date range
    */
-  if (isDateAfter(now, new Date(from))) {
+  if (isDateAfter(now, start)) {
     try {
       const accountTransactions = await getTransactions(
         accountId,
-        from,
-        isDateAfter(new Date(to), now) ? now.toISOString() : to,
+        start.toISOString(),
+        end.toISOString(),
         token
       );
+      const db = getFirestore();
+      const dbTransactions = await db.collection('BankTransactions')
+        .where('uid', '==', uid)
+        .where('bankAccountId', '==', accountId)
+        .where('date', '>=', start)
+        .where('date', '<', end)
+        .get();
+      
+      const savedBankTransactions = dbTransactions.docs.map((doc) => doc.data());
+
       transactions.push(...accountTransactions.results.map((result) => {
+        const savedBankTransaction = savedBankTransactions.find(({transactionId}) => transactionId === result.transaction_id);
         return {
           ...result,
+          ...savedBankTransaction,
           title: result.description,
           subtitle: result.meta.provider_category,
           amount: Math.floor(result.amount * 100),
           account: accountId,
           date: result.timestamp,
           transaction_id: result.transaction_id,
+          _id: result.transaction_id,
           running_balance: result.running_balance ? Math.floor(result.running_balance.amount * 100) : null, 
-          _id: result.transaction_id
         }
       }));
     } catch (error) {
