@@ -65,10 +65,12 @@ router.get('/', async (req, res) => {
         .where('date', '<', end)
         .get();
       
-      const savedBankTransactions = dbTransactions.docs.map((doc) => doc.data());
+      const savedBankTransactions = !dbTransactions.empty
+        ? dbTransactions.docs.map((doc) => doc.data())
+        : null;
 
       transactions.push(...accountTransactions.results.map((result) => {
-        const savedBankTransaction = savedBankTransactions.find(({transactionId}) => transactionId === result.transaction_id);
+        const savedBankTransaction = savedBankTransactions?.find(({transactionId}) => transactionId === result.transaction_id);
         return {
           ...result,
           ...savedBankTransaction,
