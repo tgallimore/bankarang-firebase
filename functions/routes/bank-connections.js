@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const CryptoJS = require('crypto-js');
 const addSeconds = require('date-fns/addSeconds');
+const addDays = require('date-fns/addDays');
 
 const { exchangeCodeForToken, getAccounts } = require('../truelayer/api');
 
@@ -19,7 +20,13 @@ router.post('/truelayer-callback', async (req, res) => {
       uid,
       token: CryptoJS.AES.encrypt(tokens.access_token, process.env.ENCRYPT_KEY).toString(),
       refreshToken: CryptoJS.AES.encrypt(tokens.refresh_token, process.env.ENCRYPT_KEY).toString(),
-      accounts: trueLayerAccounts.results.map(({account_id}) => account_id),
+      accounts: trueLayerAccounts.results.map(({account_id}) => ({
+        account_id,
+        registered: now.toISOString(),
+        authorised: now.toISOString(),
+        expires: addDays(now, 90).toISOString(),
+        primary: false
+      })),
       expires: addSeconds(now, tokens.expires_in)
     };
     const db = getFirestore();

@@ -5,7 +5,7 @@ const { getAccountBalance } = require('../truelayer/api');
 router.get('/', async (req, res) => {
   const { account: accountId } = req.query;
   const connection = res.locals.truelayerConnections
-    .find(({accounts}) => accounts.includes(accountId));
+    .find(({accounts}) => !!accounts.find(({account_id}) => account_id === accountId));
   let account;
   try {
     const bankAccounts = await getAccountBalance(accountId, connection.token);

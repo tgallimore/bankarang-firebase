@@ -12,7 +12,10 @@ router.get('/', async (req, res) => {
     const connection = truelayerConnections[i];
     try {
       const bankAccount = await getAccounts(connection.token);
-      accounts.push(...bankAccount.results);
+      bankAccount.results.forEach((result) => {
+        const connectedBank = connection.accounts.find(({account_id}) => account_id === result.account_id);
+        accounts.push({...result, ...connectedBank});
+      });
     } catch(error) {
       res.status(500);
       return res.json({ message: 'Could not get bank account details', error });

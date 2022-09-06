@@ -40,7 +40,7 @@ router.get('/', async (req, res) => {
   const now = new Date();
 
   const connection = res.locals.truelayerConnections
-    .find(({accounts}) => accounts.includes(accountId));
+    .find(({accounts}) => !!accounts.find(({account_id}) => account_id === accountId));
   const { token } = connection;
 
   /**
@@ -192,7 +192,7 @@ router.get('/truelayer', async (req, res) => {
   const now = new Date();
 
   const connection = res.locals.truelayerConnections
-    .find(({accounts}) => accounts.includes(accountId));
+    .find(({accounts}) => !!accounts.find(({account_id}) => account_id === accountId));
   const { token } = connection;
 
   /**

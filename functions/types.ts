@@ -1,4 +1,14 @@
 /**
+ * Connected bank account
+ * Part of BankConnections
+ */
+type Account = {
+  account_id: string
+  registered: string
+  authorised: string
+  primary: boolean
+}
+/**
  * Load all at once durring middleware for:
  * Transactions
  * Accounts
@@ -7,7 +17,7 @@
  * Queried by: { uid }
  */
 type BankConnection = {
-  accounts: string[]
+  accounts: Account[]
   token: string
   refreshToken: string
   expires: Date
