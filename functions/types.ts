@@ -35,8 +35,8 @@ type BankTransaction = {
   bankAccountId: string
   transactionId: string
   date: Date
+  amount: number
   budgetId?: string
-  savingPotId?: string
 }
 
 /**
