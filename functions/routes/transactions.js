@@ -120,7 +120,7 @@ router.get('/', async (req, res) => {
         .forEach((transaction) => {
           const getTransactionsFrom = includeAll || isDateBefore((new Date(from)), new Date(transaction.date))
             ? addDays(new Date(transaction.date), 1).toISOString()
-            : from;
+            : addDays(new Date(transaction.date), 1).toISOString();
           try {
             const pendingFromRecurringTransactions =
               getPendingTransactionsFromRecurring(transaction, to, getTransactionsFrom);
