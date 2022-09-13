@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
       const bankAccount = await getAccounts(connection.token);
       bankAccount.results.forEach((result) => {
         const connectedBank = connection.accounts.find(({account_id}) => account_id === result.account_id);
-        accounts.push({...result, ...connectedBank});
+        accounts.push({...result, ...connectedBank, connection_id: connection._id });
       });
     } catch(error) {
       res.status(500);

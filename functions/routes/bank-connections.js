@@ -8,6 +8,14 @@ const addDays = require('date-fns/addDays');
 
 const { exchangeCodeForToken, getAccounts } = require('../truelayer/api');
 
+const encrypt = (str) => {
+  return CryptoJS.AES.encrypt(str, process.env.ENCRYPT_KEY).toString();
+}
+
+const decrypt = (str) => {
+  return CryptoJS.AES.decrypt(str, process.env.ENCRYPT_KEY).toString(CryptoJS.enc.Utf8);
+}
+
 router.post('/truelayer-callback', async (req, res) => {
   const { code, redirectUri } = req.body;
   const now = new Date();
@@ -18,8 +26,8 @@ router.post('/truelayer-callback', async (req, res) => {
     const trueLayerAccounts = await getAccounts(tokens.access_token);
     const newConnection = {
       uid,
-      token: CryptoJS.AES.encrypt(tokens.access_token, process.env.ENCRYPT_KEY).toString(),
-      refreshToken: CryptoJS.AES.encrypt(tokens.refresh_token, process.env.ENCRYPT_KEY).toString(),
+      token: encrypt(tokens.access_token),
+      refreshToken: encrypt(tokens.refresh_token),
       accounts: trueLayerAccounts.results.map(({account_id}) => ({
         account_id,
         registered: now.toISOString(),

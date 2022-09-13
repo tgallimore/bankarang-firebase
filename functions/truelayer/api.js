@@ -9,7 +9,7 @@ const TRUELAYER_CONFIG = {
 const TRUELAYER_AUTH_ROOT = 'https://auth.truelayer.com';
 const TRUELAYER_API_ROOT = 'https://api.truelayer.com/data/v1';
 
-const exchangeCodeForToken = async (code, redirectUri) => {
+const exchangeCodeForToken = async (code, redirect_uri) => {
   const response = await axios({
     method: 'post',
     url: `${TRUELAYER_AUTH_ROOT}/connect/token`,
@@ -19,13 +19,18 @@ const exchangeCodeForToken = async (code, redirectUri) => {
     data: {
       ...TRUELAYER_CONFIG,
       grant_type: 'authorization_code',
-      redirect_uri: redirectUri,
+      redirect_uri,
       code
     }
   });
   return response.data;
 };
 
+/**
+ * Used to refresh an access token pre-flight
+ * @param {*} refresh_token 
+ * @returns Promise<TrueLayerToken>
+ */
 const refreshToken = async (refresh_token) => {
   const data = qs.stringify({
     ...TRUELAYER_CONFIG,

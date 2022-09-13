@@ -29,7 +29,8 @@ module.exports = async function(req, res, next) {
     if (isValid) {
       connections.push({
         token: trueLayerToken,
-        accounts: connection.accounts
+        accounts: connection.accounts,
+        _id: snapshot.id
       });
     } else {
 
@@ -44,7 +45,8 @@ module.exports = async function(req, res, next) {
         }, { merge: true });
         connections.push({
           token: newToken.access_token,
-          accounts: connection.accounts
+          accounts: connection.accounts,
+          _id: snapshot.id
         });
       }
       catch(e) {
