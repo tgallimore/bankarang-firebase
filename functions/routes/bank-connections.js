@@ -2,19 +2,11 @@ const functions = require('firebase-functions');
 const { getFirestore } = require('firebase-admin/firestore');
 const express = require('express');
 const router = express.Router();
-const CryptoJS = require('crypto-js');
 const addSeconds = require('date-fns/addSeconds');
 const addDays = require('date-fns/addDays');
+const { encrypt } = require('../util/secure');
 
 const { exchangeCodeForToken, getAccounts } = require('../truelayer/api');
-
-const encrypt = (str) => {
-  return CryptoJS.AES.encrypt(str, process.env.ENCRYPT_KEY).toString();
-}
-
-const decrypt = (str) => {
-  return CryptoJS.AES.decrypt(str, process.env.ENCRYPT_KEY).toString(CryptoJS.enc.Utf8);
-}
 
 router.post('/truelayer-callback', async (req, res) => {
   const { code, redirectUri } = req.body;

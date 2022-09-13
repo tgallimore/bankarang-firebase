@@ -1,19 +1,9 @@
-const functions = require('firebase-functions');
 const { getFirestore } = require('firebase-admin/firestore');
-
-const CryptoJS = require('crypto-js');
 const isDateBefore = require('date-fns/isBefore');
 const addSeconds = require('date-fns/addSeconds');
+const { encrypt, decrypt } = require('../util/secure');
 
 const { refreshToken } = require('../truelayer/api');
-
-const decrypt = (str) => {
-  return CryptoJS.AES.decrypt(str, process.env.ENCRYPT_KEY).toString(CryptoJS.enc.Utf8);
-}
-
-const encrypt = (str) => {
-  return CryptoJS.AES.encrypt(str, process.env.ENCRYPT_KEY).toString();
-}
 
 module.exports = async function(req, res, next) {
   const uid = req.user.uid;
