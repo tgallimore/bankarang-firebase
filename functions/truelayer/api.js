@@ -69,14 +69,26 @@ const getAccountBalance = async (accountId, token) => {
 };
 
 const getTransactions = async (accountId, from, to, token) => {
-  const response = await axios({
-    method: 'get',
-    url: `${TRUELAYER_API_ROOT}/accounts/${accountId}/transactions?from=${from}&to=${(to)}`,
-    headers: { 
-      'Authorization': `Bearer ${token}`
-    },
-  });
-  return response.data;
+  const promises = [
+    axios({
+      method: 'get',
+      url: `${TRUELAYER_API_ROOT}/accounts/${accountId}/transactions/pending?from=${from}&to=${(to)}`,
+      headers: { 
+        'Authorization': `Bearer ${token}`
+      },
+    }),
+    axios({
+      method: 'get',
+      url: `${TRUELAYER_API_ROOT}/accounts/${accountId}/transactions?from=${from}&to=${(to)}`,
+      headers: { 
+        'Authorization': `Bearer ${token}`
+      },
+    }),
+  ]
+  const responses = await Promise.all(promises);
+  return {
+    results: [...responses[0]?.data?.results, ...responses[1]?.data?.results]
+  };
 };
 
 module.exports = {
