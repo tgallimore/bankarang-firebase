@@ -173,28 +173,7 @@ router.get('/', async (req, res) => {
   } catch (error) {
     res.status(500);
     return res.json(error);
-  }
-
-  /**
-   * Saved transactions for saving pots and budgets
-   * Includes only transactions within the from/to date range
-   */
-  
-
-  /**
-   * 1. Load BankTransactions collection
-   * 2. Filter out transactions outside the date range
-   * 3. For each actual bank transaction (collated above):
-   *      3a. Find matching saved transaction
-   *      3b. Merge it in with this transaction
-   * 4. For any transaction that is not in the saved list
-   *      4a. Alert the user to confirm saving transfers or budget categories
-   * 5. For all matched transactions
-   *      5a. Use these to calculate budgets and saving balances
-   *      5b. Saving balances will need all transactions since the start of the saving account0,
-   */
-
-
+  }  
 
   return res.json({
     transactions: addDayTagsToTransactions(transactions),
