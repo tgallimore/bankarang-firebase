@@ -25,6 +25,7 @@ const validateFirebaseIdToken = require('./middleware/auth');
 const trueLayerMiddleware = require('./truelayer/middleware');
 const bankConnectionsApi = require('./routes/bank-connections');
 const timelineApi = require('./routes/timeline');
+const deleteApi = require('./routes/delete');
 const accountsApi = require('./routes/accounts');
 const balanceApi = require('./routes/balance');
 const transactionsApi = require('./routes/transactions');
@@ -38,6 +39,7 @@ app.use(validateFirebaseIdToken);
 
 app.use('/bank-connections', bankConnectionsApi);
 app.use('/timeline', timelineApi);
+app.use('/delete', deleteApi);
 
 app.use('/accounts', trueLayerMiddleware, accountsApi);
 app.use('/balance', trueLayerMiddleware, balanceApi);
