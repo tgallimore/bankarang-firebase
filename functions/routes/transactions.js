@@ -155,7 +155,9 @@ router.get('/', async (req, res) => {
       items
         .filter(({type, recurring}) => type === 'saving' && recurring)
         .forEach((transaction) => {
-          const getTransactionsFrom = formatDate(addDays(new Date(transaction.date), 1));
+          const getTransactionsFrom = includeAll || isDateBefore((new Date(from)), new Date(transaction.date))
+            ? formatDate(addDays(new Date(transaction.date), 1))
+            : from;
           try {
             const pendingFromRecurringTransactions =
               getPendingTransactionsFromRecurring(transaction, to, getTransactionsFrom);
