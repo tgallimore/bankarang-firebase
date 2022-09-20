@@ -10,6 +10,7 @@ const { getTransactions } = require('../truelayer/api');
 const { getPendingTransactionsFromRecurring } = require('../util/transactions');
 
 const { getFirestore } = require('firebase-admin/firestore');
+const { formatDate } = require('../util/date');
 
 const sortByDateFn = (a, b) => {
   return isDateBefore(new Date(a.date), new Date(b.date))
@@ -53,8 +54,8 @@ router.get('/', async (req, res) => {
     try {
       const accountTransactions = await getTransactions(
         accountId,
-        start.toISOString(),
-        end.toISOString(),
+        formatDate(start),
+        formatDate(end),
         token
       );
       const db = getFirestore();
@@ -119,7 +120,7 @@ router.get('/', async (req, res) => {
         .filter(({type, recurring}) => type === 'pending' && recurring)
         .forEach((transaction) => {
           const getTransactionsFrom = includeAll || isDateBefore((new Date(from)), new Date(transaction.date))
-            ? addDays(new Date(transaction.date), 1).toISOString()
+            ? formatDate(addDays(new Date(transaction.date), 1))
             : from;
           try {
             const pendingFromRecurringTransactions =
@@ -154,7 +155,7 @@ router.get('/', async (req, res) => {
       items
         .filter(({type, recurring}) => type === 'saving' && recurring)
         .forEach((transaction) => {
-          const getTransactionsFrom = addDays(new Date(transaction.date), 1).toISOString();
+          const getTransactionsFrom = formatDate(addDays(new Date(transaction.date), 1));
           try {
             const pendingFromRecurringTransactions =
               getPendingTransactionsFromRecurring(transaction, to, getTransactionsFrom);
@@ -200,7 +201,7 @@ router.get('/truelayer', async (req, res) => {
       const accountTransactions = await getTransactions(
         accountId,
         from,
-        isDateAfter(new Date(to), now) ? now.toISOString() : to,
+        isDateAfter(new Date(to), now) ? formatDate(now) : to,
         token
       );
       transactions.push(...accountTransactions.results.map((result) => {

@@ -10,7 +10,7 @@ const isWeekend = require('date-fns/isWeekend');
 const isEqual = require('date-fns/isEqual');
 const endOfDay = require('date-fns/endOfDay');
 const isLastDayOfMonth = require('date-fns/isLastDayOfMonth');
-const formatDate = require('date-fns/format');
+const format = require('date-fns/format');
 const isMonday = require('date-fns/isMonday');
 const isTuesday = require('date-fns/isTuesday');
 const isWednesday = require('date-fns/isWednesday');
@@ -18,7 +18,13 @@ const isThursday = require('date-fns/isThursday');
 const isFriday = require('date-fns/isFriday');
 const isSaturday = require('date-fns/isSaturday');
 const isSunday = require('date-fns/isSunday');
+const enGB = require('date-fns/locale/en-GB');
+
 const bankHolidays = require('./bank-holidays.json');
+
+const formatDate = (date, str = 'yyyy-MM-dd') => {
+  return format(date, str, { locale: enGB });
+}
 
 const isNamedDays = {
   Monday: isMonday,
@@ -91,7 +97,7 @@ const isBankHoliday = (day) => {
   // but will be the day before at 23:00
   // use date-fns format instead
   // const dayString = day.toISOString().split('T')[0];
-  const dayString = formatDate(day, 'yyyy-MM-dd');
+  const dayString = formatDate(day);
   return bankHolidays.find(({date: holiday}) => holiday === dayString);
 }
 
@@ -507,6 +513,7 @@ const getDateRangeFromSettingAndReference = (setting, reference) => {
 };
 
 module.exports = {
+  formatDate,
   getAllDaysInMonth,
   forEachDayBetween,
   isNthDay,

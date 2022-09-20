@@ -5,6 +5,7 @@ const router = express.Router();
 const addSeconds = require('date-fns/addSeconds');
 const addDays = require('date-fns/addDays');
 const { encrypt } = require('../util/secure');
+const { formatDate } = require('../util/date');
 
 const { exchangeCodeForToken, getAccounts } = require('../truelayer/api');
 
@@ -22,9 +23,9 @@ router.post('/truelayer-callback', async (req, res) => {
       refreshToken: encrypt(tokens.refresh_token),
       accounts: trueLayerAccounts.results.map(({account_id}) => ({
         account_id,
-        registered: now.toISOString(),
-        authorised: now.toISOString(),
-        expires: addDays(now, 90).toISOString(),
+        registered: formatDate(now),
+        authorised: formatDate(now),
+        expires: formatDate(addDays(now, 90)),
         primary: false
       })),
       expires: addSeconds(now, tokens.expires_in)
@@ -61,9 +62,9 @@ router.post('/truelayer-renew-callback', async (req, res) => {
         const connectedAccount = connection.data().accounts.find(({account_id: accountId}) => account_id === accountId);
         return {
           account_id,
-          registered: connectedAccount?.registered || now.toISOString(),
-          authorised: now.toISOString(),
-          expires: addDays(now, 90).toISOString(),
+          registered: connectedAccount?.registered || formatDate(now),
+          authorised: formatDate(now),
+          expires: formatDate(addDays(now, 90)),
           primary: connectedAccount?.primary || false
         }
       }),
