@@ -9,7 +9,7 @@ const addDays = require('date-fns/addDays');
 const { getTransactions } = require('../truelayer/api');
 const { getPendingTransactionsFromRecurring } = require('../util/transactions');
 
-const { getFirestore } = require('firebase-admin/firestore');
+const { getFirestore, Timestamp } = require('firebase-admin/firestore');
 const { formatDate } = require('../util/date');
 
 const sortByDateFn = (a, b) => {
@@ -24,8 +24,10 @@ const addDayTagsToTransactions = (transactions) => {
   const result = [];
   transactions?.forEach((transaction, i) => {
     const previousTransaction = transactions[i-1];
-    if (!previousTransaction?.date || !isSameDay(new Date(previousTransaction.date), new Date(transaction.date))) {
-      result.push([transaction.date, transaction.running_balance]);
+    const date = transaction.date instanceof Timestamp ? transaction.date.toDate() : transaction.date;
+    const previousDate = previousTransaction?.date instanceof Timestamp ? previousTransaction?.date.toDate() : previousTransaction?.date;
+    if (!previousTransaction?.date || !isSameDay(new Date(previousDate), new Date(date))) {
+      result.push([date, transaction.running_balance]);
     }
     result.push(transaction);
   });
@@ -87,22 +89,6 @@ router.get('/', async (req, res) => {
           running_balance: result.running_balance ? Math.floor(result.running_balance.amount * 100) : null, 
         }
       }));
-
-      const dbAutoSavingTransactions = await db.collection('BankTransactions')
-        .where('uid', '==', uid)
-        .where('bankAccountId', '==', accountId)
-        .where('saving.rule.type', 'in', ['roundOutgoing', 'percentageIncoming'])
-        .where('date', '<', end)
-        .get();
-
-      const autoSavingTransactions = !dbTransactions.empty
-        ? dbAutoSavingTransactions.docs.map((doc) => doc.data())
-          ?.filter(transaction => !transactions.find(({transactionId}) => transactionId === transaction.transaction_id))
-        : null;
-
-      if (autoSavingTransactions?.length) {
-        transactions.push(...autoSavingTransactions);
-      }
 
     } catch (error) {
       res.status(500);
@@ -192,16 +178,54 @@ router.get('/', async (req, res) => {
       // finally add to response
       savingTransactions.push(...includedSavingTransactions);
     }
+
+    const autoSavingStart = includeAll ? ['date', '<', end] : ['date', '>=', start];
+
+    // get auto saving transactions that are not included already
+    const dbAutoSavingTransactions = await db.collection('BankTransactions')
+      .where('uid', '==', uid)
+      .where('bankAccountId', '==', accountId)
+      .where('saving.rule.type', 'in', ['roundOutgoing', 'percentageIncoming'])
+      .where(...autoSavingStart)
+      .where('date', '<', end)
+      .get();
+
+    const autoSavingTransactions = !dbAutoSavingTransactions.empty
+      ? dbAutoSavingTransactions.docs.map((doc) => doc.data())
+        ?.filter(transaction => !transactions.find(({transaction_id}) => transaction_id === transaction.transactionId))
+        // ?.map((transaction) => {
+        //   return {
+        //     uid: transaction.uid,
+        //     transaction_id: transaction.transactionId,
+        //     account: transaction.bankAccountId,
+        //     type: 'saving',
+        //     amount: transaction.saving.amount,
+        //     date: transaction.date.toDate(),
+        //     title: transaction.saving.rule.type === 'roundOutgoing'
+        //     ? `Round up outgoing`
+        //     : `Save ${saving.rule.percentage}% of incoming`,
+        //     subtitle: '',
+        //     recurring: null,
+        //     savingPot: transaction.saving.savingPotId
+        //   }
+        // })
+      : null;
+
+    if (autoSavingTransactions?.length) {
+      savingTransactions.push(...autoSavingTransactions);
+    }
   } catch (error) {
     res.status(500);
     return res.json(error);
-  }  
+  }
 
-  return res.json({
+  const response = {
     transactions: addDayTagsToTransactions(transactions.sort(sortByDateFn)),
     pendingTransactions: addDayTagsToTransactions(pendingTransactions.sort(sortByDateFn)),
     savingTransactions: savingTransactions.sort(sortByDateFn)
-  });
+  }
+
+  return res.json(response);
 });
 
 router.get('/truelayer', async (req, res) => {
