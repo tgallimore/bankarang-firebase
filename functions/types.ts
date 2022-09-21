@@ -36,7 +36,12 @@ type BankTransaction = {
   transactionId: string
   date: Date
   amount: number
-  budgetId?: string
+  budgetTitle?: string
+  saving?: {
+    savingPotId: string,
+    rule: SavingPotRule,
+    amount: number
+  }
 }
 
 /**
@@ -47,14 +52,16 @@ type BankTransaction = {
  * Queried by: { uid, account_id, date? }
  */
 type Transaction = {
+  uid: string
+  transaction_id?: string
   account: string
   type: 'pending' | 'saving'
   amount: number
-  date: Date
-  title: string
-  subtitle?: string
+  date: string
+  title: string | null
+  subtitle: string | null
   recurring?: string | null
-  savingPot?: string
+  savingPot?: string | null
 }
 
 /**

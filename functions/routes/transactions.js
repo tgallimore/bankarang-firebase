@@ -71,7 +71,9 @@ router.get('/', async (req, res) => {
         : null;
 
       transactions.push(...accountTransactions.results.map((result) => {
-        const savedBankTransaction = savedBankTransactions?.find(({transactionId}) => transactionId === result.transaction_id);
+        const savedBankTransaction = savedBankTransactions
+          ?.find(({transactionId}) => transactionId === result.transaction_id);
+
         return {
           ...result,
           ...savedBankTransaction,
@@ -85,6 +87,23 @@ router.get('/', async (req, res) => {
           running_balance: result.running_balance ? Math.floor(result.running_balance.amount * 100) : null, 
         }
       }));
+
+      const dbAutoSavingTransactions = await db.collection('BankTransactions')
+        .where('uid', '==', uid)
+        .where('bankAccountId', '==', accountId)
+        .where('saving.rule.type', 'in', ['roundOutgoing', 'percentageIncoming'])
+        .where('date', '<', end)
+        .get();
+
+      const autoSavingTransactions = !dbTransactions.empty
+        ? dbAutoSavingTransactions.docs.map((doc) => doc.data())
+          ?.filter(transaction => !transactions.find(({transactionId}) => transactionId === transaction.transaction_id))
+        : null;
+
+      if (autoSavingTransactions?.length) {
+        transactions.push(...autoSavingTransactions);
+      }
+
     } catch (error) {
       res.status(500);
       return res.json(error);
@@ -179,7 +198,7 @@ router.get('/', async (req, res) => {
   }  
 
   return res.json({
-    transactions: addDayTagsToTransactions(transactions),
+    transactions: addDayTagsToTransactions(transactions.sort(sortByDateFn)),
     pendingTransactions: addDayTagsToTransactions(pendingTransactions.sort(sortByDateFn)),
     savingTransactions: savingTransactions.sort(sortByDateFn)
   });
