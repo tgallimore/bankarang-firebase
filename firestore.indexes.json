@@ -5,11 +5,11 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "bankAccountId",
+          "fieldPath": "uid",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "uid",
+          "fieldPath": "bankAccountId",
           "order": "ASCENDING"
         },
         {
@@ -23,11 +23,11 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "account",
+          "fieldPath": "uid",
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "uid",
+          "fieldPath": "account",
           "order": "ASCENDING"
         },
         {
@@ -54,6 +54,28 @@
         },
         {
           "fieldPath": "savingPot",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "BankTransactions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "bankAccountId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "saving.rule.type",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "date",
           "order": "ASCENDING"
         }
       ]
