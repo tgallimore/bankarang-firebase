@@ -30,27 +30,40 @@ router.delete('/saving-pot', async (req, res) => {
       .delete();
   }
 
-  const dbTransactions = await db.collection('Transactions')
-    .where('uid', '==', uid)
-    .where('type', '==', 'saving')
-    .where('savingPot', '>=', savingPot);
+  try {
+    const dbTransactions = await db.collection('Transactions')
+      .where('uid', '==', uid)
+      .where('type', '==', 'saving')
+      .where('savingPot', '>=', savingPot);
 
-  const snapshot = await dbTransactions.get();
+    const dbBankTransactions = await db.collection('BankTransactions')
+      .where('uid', '==', uid)
+      .where('saving.savingPotId', '==', savingPot);
 
-  const batchSize = snapshot.size;
-  if (batchSize === 0) {
+    const transactionSnapshot = await dbTransactions.get();
+    const bankTransactionSnapshot = await dbBankTransactions.get();
+
+    const batch = db.batch();
+    
+    if (transactionSnapshot.size) {
+      transactionSnapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+    }
+
+    if (bankTransactionSnapshot.size) {
+      bankTransactionSnapshot.docs.forEach((doc) => {
+        batch.set(doc.ref, { saving: {} }, { merge: true })
+      });
+    } 
+
+    await batch.commit();
     await deleteSavingPot();
     return res.json({});
+  } catch(e) {
+    res.status(500);
+    return res.json();
   }
-
-  // Delete documents in a batch
-  const batch = db.batch();
-  snapshot.docs.forEach((doc) => {
-    batch.delete(doc.ref);
-  });
-  await batch.commit();
-  await deleteSavingPot();
-  return res.json({});
 });
 
 
