@@ -4,8 +4,8 @@ const express = require('express');
 const router = express.Router();
 const addSeconds = require('date-fns/addSeconds');
 const addDays = require('date-fns/addDays');
-const { encrypt } = require('../util/secure');
-const { formatDate } = require('../util/date');
+const { encrypt } = require('../../util/secure');
+const { formatDate } = require('../../util/date');
 
 const { exchangeCodeForToken, getAccounts } = require('../truelayer/api');
 

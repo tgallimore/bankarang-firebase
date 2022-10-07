@@ -23,12 +23,13 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const validateFirebaseIdToken = require('./middleware/auth');
 const trueLayerMiddleware = require('./truelayer/middleware');
-const bankConnectionsApi = require('./routes/bank-connections');
-const timelineApi = require('./routes/timeline');
-const deleteApi = require('./routes/delete');
-const accountsApi = require('./routes/accounts');
-const balanceApi = require('./routes/balance');
-const transactionsApi = require('./routes/transactions');
+const connectionsApi = require('./routes/connections');
+const periodsApi = require('./routes/periods');
+// const bankConnectionsApi = require('./routes/bank-connections');
+// const deleteApi = require('./routes/delete');
+// const accountsApi = require('./routes/accounts');
+// const balanceApi = require('./routes/balance');
+// const transactionsApi = require('./routes/transactions');
 
 const app = express();
 initializeApp();
@@ -37,13 +38,16 @@ app.use(cors({origin: true}));
 app.use(cookieParser());
 app.use(validateFirebaseIdToken);
 
-app.use('/bank-connections', bankConnectionsApi);
-app.use('/timeline', timelineApi);
-app.use('/delete', deleteApi);
+app.use('/connections', connectionsApi);
+app.use('/periods', periodsApi);
 
-app.use('/accounts', trueLayerMiddleware, accountsApi);
-app.use('/balance', trueLayerMiddleware, balanceApi);
-app.use('/transactions', trueLayerMiddleware, transactionsApi);
+// app.use('/bank-connections', bankConnectionsApi);
+
+// app.use('/delete', deleteApi);
+
+// app.use('/accounts', trueLayerMiddleware, accountsApi);
+// app.use('/balance', trueLayerMiddleware, balanceApi);
+// app.use('/transactions', trueLayerMiddleware, transactionsApi);
 
 app.get('/whoami', (req, res) => {
   res.json(req.user);
