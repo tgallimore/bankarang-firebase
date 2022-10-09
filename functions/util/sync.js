@@ -17,12 +17,12 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
       return Promise.reject();
     }
 
-    const halfYearAgo = addDays(now, -183);
+    const onYearAgo = addDays(now, -364);
+    const oneMonthAgo = addDays(now, -31);
     const latestSync = account.latest_sync?.toDate();
-    const latest_sync = latestSync && !isBefore(latestSync, halfYearAgo)
+    const latest_sync = latestSync && !isBefore(latestSync, onYearAgo)
       ? latestSync
-      : halfYearAgo;
-
+      : oneMonthAgo;
 
     const balance = await getAccountBalance(account_id, token);
     
