@@ -10,6 +10,8 @@ type Account = {
   refresh_token: string
   nickname: string
   type: 'current' | 'saving'
+  overdraft_available: boolean
+  latest_sync: Date
   balance_pots: {
     [id: string]: {
       id: string
@@ -34,27 +36,29 @@ type Account = {
     }
   }
   connection_data: {
-    account_id: string
-    display_name: string
-    account_type: string
-    currency: string
-    provider: {
-      logo_uri: string
+    account: {
+      account_id: string
       display_name: string
-      provider_id: string
+      account_type: string
+      currency: string
+      provider: {
+        logo_uri: string
+        display_name: string
+        provider_id: string
+      }
+      account_number: {
+        iban: string
+        number: string
+        sort_code: string
+        swift_bic: string
+      }
+    },
+    balance: {
+      available: number
+      currency: string
+      current: number
+      overdraft: number
     }
-    account_number: {
-      iban: string
-      number: string
-      sort_code: string
-      swift_bic: string
-    }
-  }
-  connection_latest_balance: {
-    available: number
-    currency: string
-    current: number
-    overdraft: number
   }
 }
 

@@ -23,8 +23,11 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const validateFirebaseIdToken = require('./middleware/auth');
 const trueLayerMiddleware = require('./truelayer/middleware');
+
 const connectionsApi = require('./routes/connections');
 const periodsApi = require('./routes/periods');
+
+const connectionApi = require('./routes/connection');
 // const bankConnectionsApi = require('./routes/bank-connections');
 // const deleteApi = require('./routes/delete');
 // const accountsApi = require('./routes/accounts');
@@ -40,6 +43,8 @@ app.use(validateFirebaseIdToken);
 
 app.use('/connections', connectionsApi);
 app.use('/periods', periodsApi);
+
+app.use('/connection', trueLayerMiddleware, connectionApi);
 
 // app.use('/bank-connections', bankConnectionsApi);
 
