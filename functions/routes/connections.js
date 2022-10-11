@@ -21,6 +21,7 @@ router.post('/connect', async (req, res) => {
     const accountsCollection = db.collection('Accounts');
     const tokensCollection = db.collection('Tokens');
     const promises = [];
+    const accounts = [];
     for (let i = 0; i < trueLayerAccounts.length; i++) {
       const account = trueLayerAccounts[i];
       const accountDocument = accountsCollection.doc(account.account_id);
@@ -37,6 +38,7 @@ router.post('/connect', async (req, res) => {
           overdraft_available: false
         });
       promises.push(accountPromise);
+      accounts.push(account);
 
       const tokenPromise = tokensCollection
         .doc(account.account_id)
@@ -60,7 +62,7 @@ router.post('/connect', async (req, res) => {
     }
 
     await Promise.all(promises);
-    return res.json({});
+    return res.json(accounts);
   }
   catch(e) {
     res.status(400);
