@@ -18,11 +18,11 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
     }
 
     const onYearAgo = addDays(now, -364);
-    const oneMonthAgo = addDays(now, -31);
+    const twoMonthsAgo = addDays(now, -62);
     const latestSync = account.latest_sync?.toDate();
     const latest_sync = latestSync && !isBefore(latestSync, onYearAgo)
       ? latestSync
-      : oneMonthAgo;
+      : twoMonthsAgo;
 
     const balance = await getAccountBalance(account_id, token);
     
@@ -46,12 +46,17 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
       const transaction = await transacitonDocument.get();
 
       if (transaction.data()) {
-        batch.set(transacitonDocument, { connection_data }, { merge: true });
+        batch.set(transacitonDocument, {
+          connection_data,
+          amount: connection_data.amount * 100,
+          date: new Date(connection_data.timestamp),
+        }, { merge: true });
       } else {
         batch.set(transacitonDocument, {
           connection_data,
           uid,
           account_id,
+          transaction_id: connection_data.transaction_id,
           title: connection_data.description,
           date: new Date(connection_data.timestamp),
           amount: connection_data.amount * 100,
@@ -60,7 +65,9 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
             ? [{
               report_category: connection_data.transaction_classification[0],
               budget_category: connection_data.transaction_classification[0],
-              allocation: connection_data.amount * 100,
+              allocation: connection_data.transaction_classification[0]
+                ? connection_data.amount * 100
+                : undefined
             }]
             : null,
           /**
@@ -70,7 +77,6 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
            */
           subscription: null,
           auto_saving: null,
-          categories: null,
         });
       }
     }
