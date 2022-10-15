@@ -29,13 +29,17 @@ router.post('/connect', async (req, res) => {
         .set({
           uid,
           account_id: account.account_id,
+          type: 'current',
           authorised: now,
           expires: addDays(now, 90),
           nickname: '',
           connection_data: { account },
-          budgets: [],
-          balance_pots: [],
-          overdraft_available: false
+          balance_pots: null,
+          overdraft_available: false,
+          current: {
+            budgets: null,
+            auto_saving: null
+          }
         });
       promises.push(accountPromise);
       accounts.push(account);
