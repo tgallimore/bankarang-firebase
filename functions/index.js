@@ -25,7 +25,6 @@ const validateFirebaseIdToken = require('./middleware/auth');
 const trueLayerMiddleware = require('./truelayer/middleware');
 
 const connectionsApi = require('./routes/connections');
-const periodsApi = require('./routes/periods');
 
 const connectionApi = require('./routes/connection');
 // const bankConnectionsApi = require('./routes/bank-connections');
@@ -42,7 +41,6 @@ app.use(cookieParser());
 app.use(validateFirebaseIdToken);
 
 app.use('/connections', connectionsApi);
-app.use('/periods', periodsApi);
 
 app.use('/connection', trueLayerMiddleware, connectionApi);
 
