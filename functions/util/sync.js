@@ -45,6 +45,8 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
       const transacitonDocument = db.collection('BankTransactions').doc(connection_data.transaction_id);
       const transaction = await transacitonDocument.get();
 
+      // TODO get related subscription
+
       if (transaction.data()) {
         batch.set(transacitonDocument, {
           connection_data,
@@ -61,6 +63,9 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
           date: new Date(connection_data.timestamp),
           amount: connection_data.amount * 100,
           receipt: null,
+
+          // TODO the categories will come from subscription if found
+
           categories: connection_data.transaction_classification?.[0]
             ? [{
               report_category: connection_data.transaction_classification[0],
