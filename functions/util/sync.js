@@ -68,8 +68,7 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
 
           categories: connection_data.transaction_classification?.[0]
             ? [{
-              report_category: connection_data.transaction_classification[0],
-              budget_category: connection_data.transaction_classification[0],
+              id: connection_data.transaction_classification[0],
               allocation: connection_data.amount * 100
             }]
             : null,
