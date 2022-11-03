@@ -50,7 +50,7 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
       if (transaction.data()) {
         batch.set(transacitonDocument, {
           connection_data,
-          amount: connection_data.amount * 100,
+          amount: Math.ceil(connection_data.amount * 100),
           date: new Date(connection_data.timestamp),
         }, { merge: true });
       } else {
@@ -61,7 +61,7 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
           transaction_id: connection_data.transaction_id,
           title: connection_data.description,
           date: new Date(connection_data.timestamp),
-          amount: connection_data.amount * 100,
+          amount: Math.ceil(connection_data.amount * 100),
           receipt: null,
 
           // TODO the categories will come from subscription if found
@@ -69,7 +69,7 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
           categories: connection_data.transaction_classification?.[0]
             ? [{
               id: connection_data.transaction_classification[0],
-              allocation: connection_data.amount * 100
+              allocation: Math.ceil(connection_data.amount * 100)
             }]
             : null,
           /**
