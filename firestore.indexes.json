@@ -1,6 +1,48 @@
 {
   "indexes": [
     {
+      "collectionGroup": "BalancePots",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "account_id",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Categories",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "account_id",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "Subscriptions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "uid",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "account_id",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "BankTransactions",
       "queryScope": "COLLECTION",
       "fields": [
@@ -9,87 +51,11 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "bankAccountId",
+          "fieldPath": "account_id",
           "order": "ASCENDING"
         },
         {
           "fieldPath": "date",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "Transactions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "uid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "account",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "type",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "recurring",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "Transactions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "uid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "type",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "savingPot",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "BankTransactions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "uid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "bankAccountId",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "saving.rule.type",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "date",
-          "order": "ASCENDING"
-        }
-      ]
-    },
-    {
-      "collectionGroup": "BankTransactions",
-      "queryScope": "COLLECTION",
-      "fields": [
-        {
-          "fieldPath": "uid",
-          "order": "ASCENDING"
-        },
-        {
-          "fieldPath": "saving.savingPotId",
           "order": "ASCENDING"
         }
       ]
