@@ -50,7 +50,9 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
       const subscription = subscriptions?.find((sub) => {
         const minValue = sub.minValue || sub.amount;
         const maxValue = sub.maxValue || sub.amount;
-        return connection_data.description?.includes(sub.title) && amount <= maxValue && amount >= minValue
+        return connection_data.description.trim().toLowerCase() === sub.title.trim().toLowerCase()
+          && amount <= maxValue
+          && amount >= minValue
       }) || null;
 
       if (subscription) {
@@ -93,21 +95,22 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
               }]
               : null,
           
-          auto_saving: amount > 0 && percent_incoming
-            ? {
-              amount: 0,
-              rule: { type: 'percent_incoming', percent_incoming: percent_incoming.percent_incoming },
-              account_type: percent_incoming.account_type,
-              account_id: percent_incoming.account_id
-            }
-            : amount <= 0 && round_outgoing
-              ? {
-                amount: 0,
-                rule: { type: 'round_outgoing' },
-                account_type: round_outgoing.account_type,
-                account_id: round_outgoing.account_id
-              }
-              : null
+          auto_saving: null,
+          // auto_saving: amount > 0 && percent_incoming
+          //   ? {
+          //     amount: 0,
+          //     rule: { type: 'percent_incoming', percent_incoming: percent_incoming.percent_incoming },
+          //     account_type: percent_incoming.account_type,
+          //     account_id: percent_incoming.account_id
+          //   }
+          //   : amount <= 0 && round_outgoing
+          //     ? {
+          //       amount: 0,
+          //       rule: { type: 'round_outgoing' },
+          //       account_type: round_outgoing.account_type,
+          //       account_id: round_outgoing.account_id
+          //     }
+          //     : null
         });
       }
     }
