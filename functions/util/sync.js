@@ -95,7 +95,11 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
               }]
               : null,
           
-          auto_saving: null,
+          auto_saving: round_outgoing?.account_id || percent_incoming?.account_id
+            // If there are auto saving account, set null so the transaction can e reviewed
+            ? null
+            // If there aren't any, we don't want to trigger a review for this transaction
+            : {},
           // auto_saving: amount > 0 && percent_incoming
           //   ? {
           //     amount: 0,
