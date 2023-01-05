@@ -37,8 +37,9 @@ router.post('/connect', async (req, res) => {
           balance_pots: null,
           overdraft_available: false,
           current: {
-            budgets: null,
-            auto_saving: null
+            categories: null,
+            percent_incoming: null,
+            round_outgoing: null
           }
         });
       promises.push(accountPromise);
