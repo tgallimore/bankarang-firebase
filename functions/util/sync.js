@@ -86,17 +86,19 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
           date: new Date(connection_data.timestamp),
           receipt: null,
 
-          categories: subscription?.categories
-            ? subscription.categories
-            : connection_data.transaction_classification?.[0]
-              ? [{
-                id: connection_data.transaction_classification[0],
-                allocation: amount
-              }]
-              : null,
+          categories: amount > 0
+            ? 'Income'
+            : subscription?.categories
+              ? subscription.categories
+              : connection_data.transaction_classification?.[0]
+                ? [{
+                  id: connection_data.transaction_classification[0],
+                  allocation: amount
+                }]
+                : null,
           
           auto_saving: round_outgoing?.account_id || percent_incoming?.account_id
-            // If there are auto saving account, set null so the transaction can e reviewed
+            // If there are auto saving account, set null so the transaction can be reviewed
             ? null
             // If there aren't any, we don't want to trigger a review for this transaction
             : {},

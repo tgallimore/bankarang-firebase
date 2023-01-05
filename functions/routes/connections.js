@@ -34,12 +34,12 @@ router.post('/connect', async (req, res) => {
           expires: addDays(now, 90),
           nickname: '',
           connection_data: { account },
-          balance_pots: null,
-          overdraft_available: false,
           current: {
             categories: null,
             percent_incoming: null,
-            round_outgoing: null
+            round_outgoing: null,
+            overdraft_available: false,
+            scheduled_incoming_available: false,
           }
         });
       promises.push(accountPromise);
