@@ -19,11 +19,11 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
     }
 
     const onYearAgo = addDays(now, -364);
-    const twoMonthsAgo = addDays(now, -62);
+    const sixMonthsAgo = addDays(now, -182);
     const latestSync = account.latest_sync?.toDate();
     const latest_sync = latestSync && !isBefore(latestSync, onYearAgo)
       ? latestSync
-      : twoMonthsAgo;
+      : sixMonthsAgo;
 
     const balance = await getAccountBalance(account_id, token);
     const transactions = await getTransactions(account_id, latest_sync.toISOString(), now.toISOString(), token);
