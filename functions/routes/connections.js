@@ -75,4 +75,34 @@ router.post('/connect', async (req, res) => {
   }
 });
 
+router.post('/renew', async (req, res) => {
+  const { code, redirectUri, connectionId } = req.body;
+  const now = new Date();
+
+  try {
+    const tokens = await exchangeCodeForToken(code, decodeURI(redirectUri));
+
+    const db = getFirestore();
+    const account = db.collection('Accounts').doc(connectionId)
+
+    await account.set({
+      expires: addDays(now, 90),
+    }, { merge: true })
+
+    await db.collection('Tokens').doc(connectionId).set({
+      token: encrypt(tokens.access_token),
+      refresh_token: encrypt(tokens.refresh_token),
+      expires: addSeconds(now, tokens.expires_in)
+    }, { merge: true })
+
+    const accountData = (await account.get()).data()
+
+    return res.json(accountData);
+  }
+  catch(e) {
+    res.status(400);
+    return res.json(e);
+  }
+});
+
 module.exports = router;

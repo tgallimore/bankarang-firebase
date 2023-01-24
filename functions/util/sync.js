@@ -39,7 +39,7 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
 
     for (let i = 0; i < transactions.length; i++) {
       const connection_data = transactions[i];
-      const transacitonDocument = db.collection('BankTransactions').doc(connection_data.transaction_id);
+      const transacitonDocument = db.collection('BankTransactions').doc(connection_data.normalised_provider_transaction_id || connection_data.transaction_id);
       const transaction = await transacitonDocument.get();
       const amount = Math.ceil(connection_data.amount * 100);
 
@@ -81,7 +81,7 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
           amount,
           subscription: subscription && subscription._id,
 
-          transaction_id: connection_data.transaction_id,
+          transaction_id: connection_data.normalised_provider_transaction_id || connection_data.transaction_id,
           title: connection_data.description,
           date: new Date(connection_data.timestamp),
           receipt: null,
