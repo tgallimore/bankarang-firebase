@@ -8,35 +8,32 @@ const { refreshToken } = require('../truelayer/api');
 module.exports = async function(req, res, next) {
   const uid = req.user.uid;
   const db = getFirestore();
-  const truelayerConnections = db.collection('BankConnections').where('uid', '==', uid);
-  const snapshots = await truelayerConnections.get();
+  const connectionsQuery = db.collection('Tokens').where('uid', '==', uid);
+  const snapshots = await connectionsQuery.get();
   const connections = [];
   for (let i = 0; i < snapshots.docs.length; i++) {
     const snapshot = snapshots.docs[i];
     const connection = snapshots.docs[i].data();
-    const trueLayerToken = decrypt(connection.token);
+    const token = decrypt(connection.token);
     const isValid = isDateBefore(new Date(), connection.expires.toDate());
     if (isValid) {
       connections.push({
-        token: trueLayerToken,
-        accounts: connection.accounts,
-        _id: snapshot.id
+        token,
+        account_id: connection.account_id,
       });
     } else {
-
       try {
         const now = new Date();
-        const trueLayerRefreshToken = decrypt(connection.refreshToken);
-        const newToken = await refreshToken(trueLayerRefreshToken);
-        await db.collection('BankConnections').doc(snapshot.id).set({
+        const oldRefreshToken = decrypt(connection.refresh_token);
+        const newToken = await refreshToken(oldRefreshToken);
+        await db.collection('Tokens').doc(snapshot.id).set({
           token: encrypt(newToken.access_token),
-          refreshToken: encrypt(newToken.refresh_token),
+          refresh_token: encrypt(newToken.refresh_token),
           expires: addSeconds(now, newToken.expires_in),
         }, { merge: true });
         connections.push({
           token: newToken.access_token,
-          accounts: connection.accounts,
-          _id: snapshot.id
+          account_id: connection.account_id,
         });
       }
       catch(e) {
@@ -45,6 +42,6 @@ module.exports = async function(req, res, next) {
       }
     }
   }
-  res.locals.truelayerConnections = connections;
+  res.locals.connections = connections;
   return next();
 };

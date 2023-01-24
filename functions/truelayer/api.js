@@ -26,6 +26,22 @@ const exchangeCodeForToken = async (code, redirect_uri) => {
   return response.data;
 };
 
+const generateAccessToken = async () => {
+  const response = await axios({
+    method: 'post',
+    url: `${TRUELAYER_AUTH_ROOT}/connect/token`,
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    data: {
+      ...TRUELAYER_CONFIG,
+      grant_type: 'client_credentials',
+      scope: 'payments'
+    }
+  });
+  return response;
+}
+
 /**
  * Used to refresh an access token pre-flight
  * @param {*} refresh_token 
@@ -54,7 +70,7 @@ const getAccounts = async (token) => {
       'Authorization': `Bearer ${token}`
     },
   });
-  return response.data;
+  return response.data?.results;
 };
 
 const getAccountBalance = async (accountId, token) => {
@@ -65,7 +81,7 @@ const getAccountBalance = async (accountId, token) => {
       'Authorization': `Bearer ${token}`
     },
   });
-  return response.data;
+  return response.data?.results?.[0];
 };
 
 const getTransactions = async (accountId, from, to, token) => {
@@ -86,13 +102,12 @@ const getTransactions = async (accountId, from, to, token) => {
     }),
   ]
   const responses = await Promise.all(promises);
-  return {
-    results: [...responses[0]?.data?.results, ...responses[1]?.data?.results]
-  };
+  return [...responses[0]?.data?.results, ...responses[1]?.data?.results];
 };
 
 module.exports = {
   exchangeCodeForToken,
+  generateAccessToken,
   refreshToken,
   getAccounts,
   getAccountBalance,
