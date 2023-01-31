@@ -20,7 +20,7 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
 
     const onYearAgo = addDays(now, -364);
     const threeMonthsAgo = addDays(now, -92);
-    const latestSync = account.latest_sync?.toDate();
+    const latestSync = addDays(account.latest_sync?.toDate(), -1);
     const latest_sync = latestSync && !isBefore(latestSync, onYearAgo)
       ? latestSync
       : threeMonthsAgo;
@@ -41,7 +41,7 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
       const connection_data = transactions[i];
       const transacitonDocument = db.collection('BankTransactions').doc(connection_data.normalised_provider_transaction_id || connection_data.transaction_id);
       const transaction = await transacitonDocument.get();
-      const amount = Math.ceil(connection_data.amount * 100);
+      const amount = Math.round(connection_data.amount * 100);
 
       /**
         * Find a matching subscription to update

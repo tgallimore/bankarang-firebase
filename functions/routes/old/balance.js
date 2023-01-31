@@ -10,9 +10,9 @@ router.get('/', async (req, res) => {
   try {
     const bankAccounts = await getAccountBalance(accountId, connection.token);
     account = bankAccounts.results[0];
-    account.available = Math.ceil(account.available * 100);
-    account.current = Math.ceil(account.current * 100);
-    account.overdraft = Math.ceil(account.overdraft * 100);
+    account.available = Math.round(account.available * 100);
+    account.current = Math.round(account.current * 100);
+    account.overdraft = Math.round(account.overdraft * 100);
   } catch(error) {
     res.status(500);
     res.json({ message: 'Could not get bank balance details', error });
