@@ -20,7 +20,7 @@ const syncBankConnection = async ({ uid, account_id, token, accountDocument }) =
 
     const onYearAgo = addDays(now, -364);
     const threeMonthsAgo = addDays(now, -92);
-    const latestSync = addDays(account.latest_sync?.toDate(), -1);
+    const latestSync = account.latest_sync && addDays(account.latest_sync?.toDate(), -1);
     const latest_sync = latestSync && !isBefore(latestSync, onYearAgo)
       ? latestSync
       : threeMonthsAgo;
